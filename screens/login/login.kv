@@ -1,1 +1,31 @@
 <LoginScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDTopAppBar:
+            type: 'small'
+            size_hint: 1, 0.07
+            set_bars_color: True
+            md_bg_color: self.theme_cls.primary_color
+            
+            MDTopAppBarTitle:
+                text: 'Entrepreno'
+
+            Button:
+                text: 'Register'
+                background_normal: ''
+                background_down: ''
+                background_color: [0.1, 0.5, 0.7, 1]
+                on_release: root.register_box()
+
+            Button:
+                text: 'Log In'
+                background_normal: ''
+                background_down: ''
+                background_color: [0.1, 0.5, 0.7, 1]
+                on_release: root.login_box()
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            id: log_box
+            size_hint: 1, 0.93
