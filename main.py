@@ -7,6 +7,7 @@ from kivy.lang import Builder
 from kivymd.app import MDApp
 
 from screens.login.login import LoginScreen
+from screens.login.reset import ResetScreen
 from screens.inventory.inventory import InventoryScreen
 
 Window.clearcolor = (1, 1, 1, 1)
@@ -25,7 +26,7 @@ class Entrepreno(MDApp):
     def on_start(self):
         if self.root:
             self.root.current = 'login'
-            
+     
 
 if __name__ == '__main__':
     Entrepreno().run()

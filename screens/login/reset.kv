@@ -1,0 +1,28 @@
+<ResetScreen>
+    MDFloatLayout:
+        size: root.size
+        pos: root.pos
+        md_bg_color: self.theme_cls.primary_color
+
+        MDFloatLayout:
+            padding: '10dp'
+            spacing: '10dp'
+            width: '375'
+            size_hint_y: 0.15
+            pos_hint: {'center_x': 0.5, 'center_y': 0.65}
+            md_bg_color: 'white'
+
+            Label:
+                text: 'Forgot your password'
+                color: 'black'
+                font_size: '20sp'
+                pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+                
+            Label:
+                text: 'Please enter your email address to reset your password'
+                color: 'gray'
+                font_size: '14sp'
+                pos_hint: {'center_x': 0.5, 'center_y': 0.35}
+
+        MDFloatLayout:
+            id: reset_box           
