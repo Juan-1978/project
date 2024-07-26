@@ -1,0 +1,82 @@
+<MyNavigationDrawerItem>:
+    
+    MDIconButton:
+        icon: root.icon
+        size_hint: None, None
+        size: dp(24), dp(24)
+        pos_hint: {'center_y': 0.5}
+        
+    MDLabel:
+        text: root.text
+        pos_hint: {'center_x': 0.65,'center_y': 0.45}
+        size_hint_x: 1
+
+<DashboardScreen>:
+    MDFloatLayout:
+        id: board_screen
+        size: root.size
+        pos: root.pos
+
+        MDTopAppBar:
+            type: 'small'
+            size_hint: 1, 0.1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.95}
+            md_bg_color: app.theme_cls.primary_color
+
+            MDTopAppBarLeadingButtonContainer:
+                MDIconButton:
+                    icon: 'menu'
+                    pos_hint: {'center_y': 0.5}
+                    on_release: nav_drawer.set_state("toggle")
+            
+            MDTopAppBarTitle:
+                text: 'Entrepreno'
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            MDTopAppBarTrailingButtonContainer:
+                MDIconButton:
+                    icon: 'account-circle-outline'
+                    pos_hint: {'center_y': 0.5}
+
+        MDFloatLayout:
+            id: board_box  
+            size_hint: 1, 0.9
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+            md_bg_color: 'skyblue'
+
+        MDNavigationLayout:
+            
+            MDNavigationDrawer:
+                id: nav_drawer
+
+                MDNavigationDrawerMenu:
+
+                    MyNavigationDrawerItem:
+                        icon: 'view-dashboard-outline'
+                        text: 'Dashboard'
+                        on_press: app.root.get_screen('dashboard').board_box()
+
+                    MyNavigationDrawerItem:
+                        icon: 'clipboard-list-outline'
+                        text: 'Inventory'
+                        on_press: app.on_drawer_press('inventory')
+
+                    MyNavigationDrawerItem:
+                        icon: 'finance'
+                        text: 'Financial'
+                        on_press: app.on_drawer_press('financial')
+
+                    MyNavigationDrawerItem:
+                        icon: 'cash-register'
+                        text: 'Sales'
+                        on_press: app.on_drawer_press('sales')
+
+                    MyNavigationDrawerItem:
+                        icon: 'city'
+                        text: 'Assets'
+                        on_press: app.on_drawer_press('assets')
+
+                    MyNavigationDrawerItem:
+                        icon: 'chart-bar'
+                        text: 'Analytics'
+                        on_press: app.on_drawer_press('analytics')

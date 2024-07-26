@@ -8,7 +8,9 @@ from kivymd.app import MDApp
 
 from screens.login.login import LoginScreen
 from screens.login.reset import ResetScreen
-from screens.inventory.inventory import InventoryScreen
+from screens.dashboard.dashboard import DashboardScreen
+
+from helpers import on_drawer_press
 
 Window.clearcolor = (1, 1, 1, 1)
 
@@ -23,9 +25,11 @@ class Entrepreno(MDApp):
 
         return Builder.load_file('main.kv')
     
+    on_drawer_press = on_drawer_press
+    
     def on_start(self):
         if self.root:
-            self.root.current = 'login'
+            self.root.current = 'dashboard'
      
 
 if __name__ == '__main__':
