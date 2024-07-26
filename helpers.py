@@ -1,6 +1,6 @@
 from kivy.lang import Builder
 from components import KV_LOGIN, KV_REGISTER, KV_RESET, KV_TEXT, KV_BOARD
-from screens.inventory.inventory import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
+from screens.dashboard.screens.screens import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
 
 
 def login_box(self):

@@ -1,5 +1,6 @@
 from kivymd.uix.floatlayout import MDFloatLayout
 
+
 class InventoryScreen(MDFloatLayout):
     pass
 

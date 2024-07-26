@@ -8,7 +8,8 @@ from kivymd.app import MDApp
 
 from screens.login.login import LoginScreen
 from screens.login.reset import ResetScreen
-from screens.dashboard.dashboard import DashboardScreen
+from screens.dashboard.dashboard import DashboardScreen 
+from screens.dashboard.screens.screens import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
 
 from helpers import on_drawer_press
 
