@@ -1,8 +1,24 @@
 from kivymd.uix.floatlayout import MDFloatLayout
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.label import MDLabel
+from kivy.uix.textinput import TextInput
+from kivy.properties import StringProperty
+from kivy.properties import ObjectProperty
+from kivy.lang import Builder
+import sqlite3
+from screens.dashboard.screens.inventory import create_table, display_table, add_item
 
 
 class InventoryScreen(MDFloatLayout):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.create_table()
+        self.display_table()
+
+    create_table = create_table
+    display_table = display_table
+    add_item = add_item
+
 
 class FinancialScreen(MDFloatLayout):
     pass
@@ -15,3 +31,19 @@ class AssetsScreen(MDFloatLayout):
 
 class AnalyticsScreen(MDFloatLayout):
     pass
+
+class MyNavigationAddItem(MDBoxLayout):
+    text = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size_hint_y = None  
+        self.text_input = TextInput() 
+        self.ids = {}     
+        self.add_widgets()
+
+    def add_widgets(self):
+        self.add_widget(
+            MDLabel(text=self.text)
+        )
+        self.ids['text_input'] = self.text_input

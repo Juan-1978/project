@@ -19,24 +19,24 @@
 
         MDTopAppBar:
             type: 'small'
-            size_hint: 1, 0.1
-            pos_hint: {'center_x': 0.5, 'center_y': 0.95}
+            size_hint: 1, 0.07
+            pos_hint: {'center_x': 0.5, 'center_y': 0.965}
             md_bg_color: app.theme_cls.primary_color
 
             MDTopAppBarLeadingButtonContainer:
                 MDIconButton:
                     icon: 'menu'
                     pos_hint: {'center_y': 0.5}
-                    on_release: nav_drawer.set_state("toggle")
+                    on_release: nav_drawer.set_state('toggle')
             
             MDTopAppBarTitle:
                 text: 'Entrepreno'
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
             MDTopAppBarTrailingButtonContainer:
                 MDIconButton:
                     icon: 'account-circle-outline'
                     pos_hint: {'center_y': 0.5}
+                    on_release: account_drawer.set_state('toggle')
 
         MDFloatLayout:
             id: board_box  
@@ -79,3 +79,22 @@
                         icon: 'chart-bar'
                         text: 'Analytics'
                         on_press: app.on_drawer_press('analytics')
+
+        MDNavigationLayout:
+            
+            MDNavigationDrawer:
+                id: account_drawer
+                size_hint: None, None
+                size: dp(250), dp(150)
+                pos_hint: {'right': 1, 'y': 0.8} 
+
+                MDNavigationDrawerMenu:
+
+                    MyNavigationDrawerItem:
+                        icon: 'account-circle-outline'
+                        text: 'Name/email'
+
+                    MyNavigationDrawerItem:
+                        icon: 'logout'
+                        text: 'Sign Out'
+                        on_press: app.sign_out()

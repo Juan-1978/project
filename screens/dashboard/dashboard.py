@@ -28,6 +28,7 @@ class MyNavigationDrawerItem(ButtonBehavior, MDFloatLayout):
 class DashboardScreen(Screen):
     def on_kv_post(self, base_widget):
         self.ids.nav_drawer.set_state('close')
+        self.ids.account_drawer.set_state('close')
         board_box(self)
         
     board_box = board_box

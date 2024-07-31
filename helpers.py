@@ -1,5 +1,5 @@
 from kivy.lang import Builder
-from components import KV_LOGIN, KV_REGISTER, KV_RESET, KV_TEXT, KV_BOARD
+from components import KV_LOGIN, KV_REGISTER, KV_RESET, KV_TEXT, KV_BOARD, ADD_ONE
 from screens.dashboard.screens.screens import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
 
 
@@ -8,6 +8,9 @@ def login_box(self):
     box.clear_widgets()
     my_widget = Builder.load_string(KV_LOGIN)
     box.add_widget(my_widget)
+
+def sign_out(self):
+    self.root.current = 'login'
 
 def register_box(self):
     box = self.ids.log_box
@@ -38,10 +41,6 @@ def board_box(self):
 def on_drawer_press(self, screen_name):
     dashboard = self.root.get_screen('dashboard')
     box = dashboard.ids.get('board_box')
-
-    if not board_box:
-        print("Error: 'board_box' ID not found.")
-        return
     
     box.clear_widgets()
 

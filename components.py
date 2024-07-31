@@ -13,6 +13,7 @@ FloatLayout:
         mode: 'outlined'
         size_hint_x: 0.45
         pos_hint: {'center_x': 0.5, 'center_y': 0.625}
+        password: True
         MDTextFieldHintText:
             text: 'Password'
 
@@ -50,6 +51,7 @@ FloatLayout:
         mode: 'outlined'
         size_hint_x: 0.45
         pos_hint: {'center_x': 0.5, 'center_y': 0.625}
+        password: True
         MDTextFieldHintText:
             text: 'Password'
 
@@ -57,6 +59,7 @@ FloatLayout:
         mode: 'outlined'
         size_hint_x: 0.45
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        password: True
         MDTextFieldHintText:
             text: 'Password'
 
@@ -147,4 +150,25 @@ Label:
     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
     text: 'Dashboard'
     color: 'black'
+"""
+
+ADD_ONE = """
+MDCard:
+    size_hint: 0.9, 0.35
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    padding: '10dp'
+    spacing: '10dp'
+    orientation: 'horizontal'
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 0.25
+
+    MDBoxLaout:
+        orientation: 'vertical' 
+        size_hint: 1, 0.50
+        md_bg_color: 'red'  
+        
+    Button:
+        text: 'Submit'
 """

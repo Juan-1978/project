@@ -1,5 +1,139 @@
+<MyNavigationAddItem>
+    orientation: 'vertical'
+    spacing: '10dp'
+    size_hint_x: 0.25
+    pos_hint: {'center_y': 0.85}
+
+    MDLabel:
+        text: root.text
+        halign: 'center'
+        valign: 'top'
+
+    TextInput:
+        text: root.text_input.text
+        on_text: root.text_input.text = self.text
+        size_hint_y: None
+        height: '30dp'
+
 <InventoryScreen>
-    Label:
-        text: "INVENTORY"
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        color: 'black'
+    MDCard:
+        id: inventory_box
+        style: 'elevated'
+        size_hint: 0.9, 0.85
+        pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+        padding: '10dp'
+        spacing: '10dp'
+        orientation: 'vertical'
+
+        MDBoxLayout:
+            size_hint: 1, 0.15
+            padding: '10dp'
+            spacing: '10dp'
+            orientation: 'horizontal'
+
+            MDLabel:
+                id: table_lable
+                text: 'INVENTORY'
+                halign: 'right'
+                valign: 'middle'
+
+            MDLabel:
+                text: 'Name:'
+                halign: 'right'
+
+            TextInput:
+                id: name_input
+                text_hint: 'Name'
+                size_hint: None, None
+                size: dp(120), dp(35)
+                pos_hint: {'center_x': 0, 'center_y': 0.5}
+
+            MDButton:
+                style: 'outlined'
+                size_hint: None, None
+                size: dp(35), dp(35)
+                radius: [0, 0, 0, 0]
+                pos_hint: {"center_y": 0.5}
+                MDButtonIcon:
+                    icon: 'magnify'
+
+            MDLabel:
+                text: 'Category:'
+                halign: 'right'
+
+            MDButton:
+                id: category_input
+                style: 'outlined'
+                pos_hint: {'center_x': 0, 'center_y': 0.5}
+                size_hint: None, None
+                size: dp(100), dp(35)
+                radius: [0, 0, 0, 0]
+                #on_release: app.create_menu()
+                MDButtonText:
+                    text: 'All'
+                    halign: 'left'
+                MDButtonIcon:
+                    icon: 'triangle-down'
+                    icon_size: dp(14)
+            
+            Widget:
+
+        MDGridLayout:
+            id: table_box
+            adaptative_height: True
+
+    MDTopAppBar:
+        size_hint: 1, 0.09
+       
+    MDFabButton:
+        icon: 'plus'
+        pos_hint: {'center_x': 0.93, 'center_y': 0.07}
+        on_press: add_drawer.set_state('toggle')
+        
+    MDNavigationLayout:
+            
+        MDNavigationDrawer:
+            id: add_drawer
+            size_hint: 0.8, 0.45
+            pos_hint: {'center_y': 0.5, 'center_y': 0.5}
+            spacing: '10dp'
+            orientation: 'vertical'
+
+            MDLabel:
+                text: 'Add a new Item'
+
+            MDCard:
+                orientation: 'horizontal'
+                spacing: '5dp'
+            
+                MyNavigationAddItem:
+                    id: item_name
+                    text: 'Name'
+
+                MyNavigationAddItem:
+                    id: item_cat
+                    text: 'Category'
+
+                MyNavigationAddItem:
+                    id: item_des
+                    text: 'Description'
+
+                MyNavigationAddItem:
+                    id: item_price
+                    text: 'Price'
+
+                MyNavigationAddItem:
+                    id: item_qua
+                    text: 'Quantity'
+
+            MDButton:
+                style: 'filled'
+                size_hint: 0.2, None
+                height: '35dp'
+                pos_hint: {'center_x': 0.75}
+                on_press: 
+                    add_drawer.set_state('toggle')
+                    root.add_item()
+                    root.display_table()
+                MDButtonText:
+                    text: 'Submit'
