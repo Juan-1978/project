@@ -25,7 +25,7 @@ class Entrepreno(MDApp):
 
         self.theme_cls.primary_color = [0.1, 0.5, 0.7, 1]
 
-        return Builder.load_file('main.kv')
+        return Builder.load_file('main.kv') 
     
     on_drawer_press = on_drawer_press
     sign_out = sign_out
