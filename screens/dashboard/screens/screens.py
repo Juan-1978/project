@@ -4,24 +4,23 @@ from kivymd.uix.label import MDLabel
 from kivy.uix.textinput import TextInput
 from kivy.properties import StringProperty
 import sqlite3
-from screens.dashboard.screens.inventory import create_table, display_table, add_item, edit_item, delete_item, checkbox_click, show_add_card
+from screens.dashboard.screens.inventory import create_table, display_table, add_item, edit_item, delete_item, show_add_card
 
 
 class InventoryScreen(MDFloatLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.name = 'inventory'
         self.create_table()
         self.display_table()
-        self.checked_box = None
 
     create_table = create_table
     display_table = display_table
     add_item = add_item
     edit_item = edit_item
     delete_item = delete_item
-    checkbox_click = checkbox_click
     show_add_card = show_add_card
-
+    
 
 class FinancialScreen(MDFloatLayout):
     pass

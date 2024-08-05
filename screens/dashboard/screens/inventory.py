@@ -1,16 +1,18 @@
-from kivy.lang import Builder
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
+from kivy.clock import Clock
+from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.menu import MDDropdownMenu
-from kivy.properties import StringProperty
+from kivy.properties import ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.divider import MDDivider
 from kivy.metrics import dp
 import sqlite3
+import math
 
 
 def create_table(self):
@@ -115,7 +117,6 @@ def display_table(self):
     items = c.fetchall()
     conn.close()
 
-    table.cols = 7
     table.clear_widgets() 
     table_head.clear_widgets() 
 
@@ -127,37 +128,14 @@ def display_table(self):
         row = MDLabel(text=i, md_bg_color='lightgray', halign='center', bold=True)
         table_head.add_widget(row)
 
-    for item in items:
-        #value = item[4] * item[5]
-        checkbox = CheckBox(group='group', color=(0, 0, 0, 1))
-        checkbox.bind(active=self.checkbox_click)
-        table.add_widget(checkbox)
-        #updated_item = item + (value,)
-        #item = updated_item
-        updated_item = ('ID-' + str(item[0]),) + item[1:]
-        for i in updated_item:
-            row = CustomRow(text=str(i))
-            table.add_widget(row)  
+    paginated_grid = PaginatedGrid(cols=7, items=items, items_per_page=6)
+    table.add_widget(paginated_grid)
 
-    
-def checkbox_click(self, checkbox, value):
-    plus_btn = self.ids.plus_btn
-    edit_btn = self.ids.edit_btn
-    delete_btn = self.ids.delete_btn
+    prev_btn = self.ids.prev_btn
+    next_btn = self.ids.next_btn
+    prev_btn.on_press = paginated_grid.prev_page
+    next_btn.on_press = paginated_grid.next_page
 
-    if value:
-        plus_btn.opacity = 0
-        edit_btn.opacity = 1
-        delete_btn.opacity = 1
-        if self.checked_box and self.checked_box != checkbox:
-            self.checked_box.active = False
-        self.checked_box = checkbox
-    else:
-        if self.checked_box == checkbox:
-            self.checked_box = None
-            plus_btn.opacity = 1
-            edit_btn.opacity = 0
-            delete_btn.opacity = 0
 
 def edit_item(self):
     plus_btn = self.ids.plus_btn
@@ -193,7 +171,7 @@ class CustomRow(MDBoxLayout):
     @property
     def halign_value(self):
         try:
-            int(self.text)
+            float(self.text)
             return 'right'
         except ValueError:
             return 'center'
@@ -224,3 +202,73 @@ class CategoryButton(Button):
         if self.menu:
             self.menu.dismiss()
             self.menu = None  
+
+
+class PaginatedGrid(MDGridLayout):
+    items = ListProperty()
+    page = NumericProperty(0)
+    items_per_page = NumericProperty(6)
+    checked_box = ObjectProperty(None, allow_none=True)
+    page_id = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.update_grid()
+        
+    def checkbox_click(self, checkbox, value):
+        parent_widget = self.parent.parent.parent
+        plus_btn = parent_widget.ids.get('plus_btn')
+        edit_btn = parent_widget.ids.get('edit_btn')
+        delete_btn = parent_widget.ids.get('delete_btn')
+        
+        if value:
+            plus_btn.opacity = 0
+            edit_btn.opacity = 1
+            delete_btn.opacity = 1
+            if self.checked_box and self.checked_box != checkbox:
+                self.checked_box.active = False
+            self.checked_box = checkbox
+        else:
+            if self.checked_box == checkbox:
+                self.checked_box.active = False
+                plus_btn.opacity = 1
+                edit_btn.opacity = 0
+                delete_btn.opacity = 0
+
+    def update_grid(self):
+        self.clear_widgets()
+        start = self.page * self.items_per_page
+        end = start + self.items_per_page
+
+        for item in self.items[start:end]:
+            #value = item[4] * item[5]
+            checkbox = CheckBox(group='group', color=(0, 0, 0, 1))
+            checkbox.bind(active=self.checkbox_click)
+            self.add_widget(checkbox)
+            #updated_item = item + (value,)
+            #item = updated_item
+            updated_item = ('ID-' + str(item[0]),) + item[1:]
+            for i in updated_item:
+                row = CustomRow(text=str(i))
+                self.add_widget(row) 
+            
+        Clock.schedule_once(self.update_page, 0.1)
+
+    def next_page(self):
+        if (self.page + 1) * self.items_per_page < len(self.items):
+            self.page += 1
+            self.update_grid()
+
+    def prev_page(self): 
+        if self.page > 0:
+            self.page -= 1
+            self.update_grid() 
+
+    def update_page(self, *args):
+        rounded_pages = math.ceil(len(self.items)/self.items_per_page)
+        self.page_id = f'{self.page + 1}/{rounded_pages}'
+        try:
+            label_text = self.parent.parent.parent.ids.page_id
+            label_text.text = self.page_id
+        except AttributeError:
+            print("Could not find the parent or label with ID 'page_id'.")

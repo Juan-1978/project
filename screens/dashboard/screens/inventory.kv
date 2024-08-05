@@ -24,6 +24,11 @@
         text: root.text
         halign: root.halign_value
 
+<PaginatedGrid>:
+    cols: 7
+    row_default_height: '50dp'
+    row_force_default: True
+    height: self.minimum_height
 
 <CategoryButton>
     size_hint: None, None
@@ -39,7 +44,7 @@
         style: 'elevated'
         size_hint: 0.9, 0.85
         pos_hint: {'center_x': 0.5, 'center_y': 0.55}
-        padding: [15, 15, 15, 15]
+        padding: [15, 15, 30, 15]
         #spacing: '10dp'
         orientation: 'vertical'
 
@@ -49,10 +54,12 @@
             spacing: '10dp'
             orientation: 'horizontal'
 
+            Widget:
+
             MDLabel:
                 id: table_lable
                 text: 'INVENTORY'
-                halign: 'right'
+                halign: 'center'
                 valign: 'middle'
 
             MDLabel:
@@ -84,7 +91,7 @@
                 style: 'outlined'
                 pos_hint: {'center_x': 0, 'center_y': 0.5}
                 size_hint: None, None
-                size: dp(100), dp(35)
+                size: dp(120), dp(35)
                 radius: [0, 0, 0, 0]
                 #on_release: app.create_menu()
                 MDButtonText:
@@ -93,7 +100,41 @@
                 MDButtonIcon:
                     icon: 'triangle-down'
                     icon_size: dp(14)
+
+            Widget:
             
+            MDBoxLayout:
+                size_hint: None, None
+                size: dp(100), dp(35)
+                spacing: 0
+                Button:
+                    id: prev_btn
+                    text: '<'
+                    color: 'black'
+                    background_normal: ''
+                    background_color: inventory_box.md_bg_color
+                    size_hint: None, None
+                    size: dp(35), dp(35)
+                    font_size: '24sp'
+
+                Label:
+                    id: page_id
+                    text: root.ids.table_box.page_id
+                    size_hint: None, None
+                    size: dp(35), dp(35)
+                    color: 'black'
+                    font_size: '14sp'
+
+                Button:
+                    id: next_btn
+                    text: '>'
+                    size_hint: None, None
+                    size: dp(35), dp(35)
+                    color: 'black'
+                    background_normal: ''
+                    background_color: inventory_box.md_bg_color
+                    font_size: '24sp'
+
             Widget:
 
         MDBoxLayout:
@@ -101,12 +142,9 @@
             size_hint: 1, 0.1
             padding: [0, 0, 35, 0]
 
-        MDGridLayout:
+        PaginatedGrid:
             id: table_box
             padding: [0, 0, 35, 0]
-            height: self.minimum_height
-            row_default_height: '50dp'
-            row_force_default: True
 
     MDTopAppBar:
         size_hint: 1, 0.09
