@@ -1,4 +1,4 @@
-<MyNavigationAddItem>
+<AddItem>
     orientation: 'vertical'
     spacing: '10dp'
     size_hint_x: 0.25
@@ -15,6 +15,23 @@
         size_hint_y: None
         height: '30dp'
 
+<EditItem>
+    orientation: 'vertical'
+    spacing: '10dp'
+    size_hint_x: 0.25
+    pos_hint: {'center_y': 0.85}
+
+    MDLabel:
+        text: root.text
+        halign: 'center'
+        valign: 'top'
+
+    MDLabel:
+        text: root.text_input.text
+        size_hint_y: None
+        height: '30dp'
+        halign: 'center'
+
 <CustomRow>
     orientation: 'vertical'
 
@@ -23,10 +40,11 @@
     MDLabel:
         text: root.text
         halign: root.halign_value
+        font_size: '14sp'
 
 <PaginatedGrid>:
     cols: 7
-    row_default_height: '50dp'
+    row_default_height: '45dp'
     row_force_default: True
     height: self.minimum_height
 
@@ -36,7 +54,6 @@
     background_normal: ''
     background_down: ''
     color: 'black'
-
 
 <InventoryScreen>
     MDCard:
@@ -155,20 +172,23 @@
         pos_hint: {'center_x': 0.93, 'center_y': 0.07}
         on_press: 
             add_drawer.set_state('toggle')
-
+            
     MDFabButton:
         id: edit_btn
         icon: 'pencil-outline'
         pos_hint: {'center_x': 0.45, 'center_y': 0.07}
         opacity: 0
+        disabled: True
         on_press: 
             edit_drawer.set_state('toggle')
+            root.load_editing_item()
 
     MDFabButton:
         id: delete_btn
         icon: 'delete'
         pos_hint: {'center_x': 0.55, 'center_y': 0.07}
         opacity: 0
+        disabled: True
         on_press: root.delete_item()
         
     MDNavigationLayout:
@@ -179,6 +199,7 @@
             pos_hint: {'center_y': 0.5, 'center_y': 0.5}
             spacing: '10dp'
             orientation: 'vertical'
+            on_close: root.close_add_card()
 
             MDLabel:
                 text: 'Add a new Item'
@@ -194,41 +215,41 @@
                 spacing: '5dp'
                 opacity: 0
             
-                MyNavigationAddItem:
+                AddItem:
                     id: item_name
                     text: 'Name'
 
-                #MyNavigationAddItem:
+                #AddItem:
                     #id: item_cat
                     #text: 'Category'
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_des
                     text: 'Description'
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_price
                     text: 'Price'
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_order
                     text: 'On Order'
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_qua
                     text: 'Quantity'
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_sales
                     text: 'On Sales Order'
                     opacity: 0
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_work
                     text: 'Work In Progress'
                     opacity: 0
 
-                MyNavigationAddItem:
+                AddItem:
                     id: item_sale_price
                     text: 'Sale Price'
                     opacity: 0
@@ -240,10 +261,10 @@
                 size_hint: 0.2, None
                 height: '35dp'
                 pos_hint: {'center_x': 0.75}
+                disabled: True
                 on_press: 
                     add_drawer.set_state('toggle')
                     root.add_item()
-                    root.display_table()
                 MDButtonText:
                     text: 'Submit'
 
@@ -261,25 +282,36 @@
                 orientation: 'horizontal'
                 spacing: '5dp'
             
-                MyNavigationAddItem:
+                EditItem:
                     id: edit_name
                     text: 'Name'
 
-                MyNavigationAddItem:
+                EditItem:
                     id: edit_cat
                     text: 'Category'
 
-                MyNavigationAddItem:
-                    id: edit_des
-                    text: 'Description'
+                AddItem:
+                    id: edit_order
+                    text: 'On Order'
 
-                MyNavigationAddItem:
-                    id: edit_price
-                    text: 'Price'
-
-                MyNavigationAddItem:
+                AddItem:
                     id: edit_qua
                     text: 'Quantity'
+
+                AddItem:
+                    id: edit_sales
+                    text: 'On Sales Order'
+                    opacity: 0
+
+                AddItem:
+                    id: edit_work
+                    text: 'Work In Progress'
+                    opacity: 0
+
+                AddItem:
+                    id: edit_sale_price
+                    text: 'Sale Price'
+                    opacity: 0
 
             MDButton:
                 style: 'filled'
@@ -287,8 +319,7 @@
                 height: '35dp'
                 pos_hint: {'center_x': 0.75}
                 on_press: 
+                    root.save_edited_item()
                     edit_drawer.set_state('toggle')
-                    root.edit_item()
-                    root.display_table()
                 MDButtonText:
                     text: 'Submit'

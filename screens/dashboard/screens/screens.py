@@ -1,10 +1,11 @@
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
+from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
 from kivy.properties import StringProperty
-import sqlite3
-from screens.dashboard.screens.inventory import create_table, display_table, add_item, edit_item, delete_item, show_add_card
+from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card
 
 
 class InventoryScreen(MDFloatLayout):
@@ -17,9 +18,11 @@ class InventoryScreen(MDFloatLayout):
     create_table = create_table
     display_table = display_table
     add_item = add_item
-    edit_item = edit_item
+    load_editing_item = load_editing_item
+    save_edited_item = save_edited_item
     delete_item = delete_item
     show_add_card = show_add_card
+    close_add_card = close_add_card
     
 
 class FinancialScreen(MDFloatLayout):
@@ -34,16 +37,59 @@ class AssetsScreen(MDFloatLayout):
 class AnalyticsScreen(MDFloatLayout):
     pass
 
-class MyNavigationAddItem(MDBoxLayout):
+
+class AddItem(MDBoxLayout):
     text = StringProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.size_hint_y = None  
-        self.text_input = TextInput()      
+        self.text_input = TextInput()     
         self.add_widgets()
 
     def add_widgets(self):
         self.add_widget(
             MDLabel(text=self.text)
         )
+
+
+class EditItem(MDBoxLayout):
+    text = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size_hint_y = None  
+        self.text_input = MDLabel()      
+        self.add_widgets()
+
+    def add_widgets(self):
+        self.add_widget(
+            MDLabel(text=self.text)
+        )
+
+
+class CategoryButton(Button):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = [
+            "Asset", "Component", "Raw Material", 
+            "Finished Goods", "Maintenance", "Packing"
+        ]
+        self.on_release = self.show_menu
+        self.menu = None
+
+    def show_menu(self):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        self.text = item
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
