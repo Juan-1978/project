@@ -43,7 +43,7 @@
         font_size: '14sp'
 
 <PaginatedGrid>:
-    cols: 7
+    cols: root.cols
     row_default_height: '45dp'
     row_force_default: True
     height: self.minimum_height
@@ -54,6 +54,13 @@
     background_normal: ''
     background_down: ''
     color: 'black'
+
+<DisplayButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
 
 <InventoryScreen>
     MDCard:
@@ -103,20 +110,21 @@
                 text: 'Category:'
                 halign: 'right'
 
-            MDButton:
+            DisplayButton:
                 id: category_input
-                style: 'outlined'
-                pos_hint: {'center_x': 0, 'center_y': 0.5}
-                size_hint: None, None
-                size: dp(120), dp(35)
-                radius: [0, 0, 0, 0]
-                #on_release: app.create_menu()
                 MDButtonText:
-                    text: 'All'
+                    id: button_text
+                    text: 'All           '
                     halign: 'left'
+                    on_text: root.display_table()
                 MDButtonIcon:
-                    icon: 'triangle-down'
-                    icon_size: dp(14)
+                    icon: 'filter-variant'
+                    style: "standard"
+                    theme_font_size: "Custom"
+                    font_size: "16sp"
+                    radius: [self.height / 2, ]
+                    size_hint: None, None
+                    size: "30dp", "30dp"
 
             Widget:
             

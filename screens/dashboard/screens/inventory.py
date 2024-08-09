@@ -122,16 +122,26 @@ def close_add_card(self):
 def display_table(self):
     table = self.ids.table_box
     table_head = self.ids.table_head
+    button_text = self.ids.button_text.text
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT id, name, category, description, price, quantity FROM test_table_3")
+
+    category = button_text.strip()
+    table.clear_widgets() 
+    table_head.clear_widgets()
+
+    if category == 'All':
+        c.execute("SELECT id, name, category, description, price, on_order, quantity FROM test_table_3")
+        head = ['Id', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
+    elif category == 'Finished Goods':
+        c.execute("SELECT id, name, category, description, quantity, on_sales_order, work_in_progress, sale_price FROM test_table_3 WHERE category = ?", (category,))
+        head = ['Id', 'Name', 'Category', 'Description', 'Quantity', 'On Sales Order', 'Work in Progress', 'Sale Price'] 
+    else: 
+        c.execute("SELECT id, name, category, description, price, on_order, quantity FROM test_table_3 WHERE category = ?", (category,))
+        head = ['Id', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
     items = c.fetchall()
     conn.close()
-
-    table.clear_widgets() 
-    table_head.clear_widgets() 
-
-    head = ['Id', 'Name', 'Category', 'Description', 'Price', 'Quantity'] 
 
     table_head.add_widget(MDLabel(text='Edit | Delete', halign='center')) 
 
@@ -139,7 +149,11 @@ def display_table(self):
         row = MDLabel(text=i, md_bg_color='lightgray', halign='center', bold=True)
         table_head.add_widget(row)
 
-    paginated_grid = PaginatedGrid(cols=7, items=items, items_per_page=10)
+    if category == 'Finished Goods':
+        paginated_grid = PaginatedGrid(cols=9, items=items, items_per_page=10)
+    else:
+        paginated_grid = PaginatedGrid(cols=8, items=items, items_per_page=10)
+    
     table.add_widget(paginated_grid)
 
     prev_btn = self.ids.prev_btn
@@ -203,6 +217,7 @@ class CustomRow(MDBoxLayout):
 
 class PaginatedGrid(MDGridLayout):
     items = ListProperty()
+    cols = NumericProperty(8)
     page = NumericProperty(0)
     items_per_page = NumericProperty(10)
     checked_box = ObjectProperty(None, allownone=True)
@@ -295,6 +310,9 @@ class PaginatedGrid(MDGridLayout):
             label.text = self.page_id
         except AttributeError:
             print("Could not find the parent or label with ID 'page_id'.")
+
+    def update_columns(self, num_cols):
+        self.cols = num_cols
             
 
 class GlobalState:
