@@ -12,7 +12,7 @@ from screens.login.reset import ResetScreen
 from screens.dashboard.dashboard import DashboardScreen 
 from screens.dashboard.screens.screens import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
 
-from helpers import on_drawer_press, sign_out
+from helpers import on_drawer_press, sign_out, remove_card
 
 Window.clearcolor = (1, 1, 1, 1)
 
@@ -29,6 +29,7 @@ class Entrepreno(MDApp):
     
     on_drawer_press = on_drawer_press
     sign_out = sign_out
+    remove_card = remove_card
     
     def on_start(self):
         if self.root:

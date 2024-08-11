@@ -172,3 +172,49 @@ MDCard:
     Button:
         text: 'Submit'
 """
+
+KV_NO_INPUT = """
+MDCard:
+    id: empty_input
+    size_hint: None, None
+    size: "280dp", "180dp"
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    elevation: 4
+    orientation: 'vertical'
+    padding: '10dp'
+
+    MDLabel:
+        text: 'Please enter a name.'
+        theme_text_color: 'Secondary'
+        halign: 'center'
+
+    MDIconButton:
+        icon: 'close'
+        size_hint: None, None
+        size: "48dp", "48dp"
+        pos_hint: {"center_x": 0.5}
+        on_release: app.remove_card(self)
+"""
+
+KV_NOT_FOUND = """
+MDCard:
+    id: not_found
+    size_hint: None, None
+    size: "280dp", "180dp"
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    elevation: 4
+    orientation: 'vertical'
+    padding: '10dp'
+
+    MDLabel:
+        text: 'Item not found.'
+        theme_text_color: 'Secondary'
+        halign: 'center'
+
+    MDIconButton:
+        icon: 'close'
+        size_hint: None, None
+        size: "48dp", "48dp"
+        pos_hint: {"center_x": 0.5}
+        on_release: app.remove_card(self)
+"""

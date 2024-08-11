@@ -1,13 +1,14 @@
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel,  MDIcon
+from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
-from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.button import MDButton
+from kivymd.uix.tooltip import MDTooltip
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.properties import StringProperty
 from kivy.metrics import dp
-from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card
+from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
 
 
 class InventoryScreen(MDFloatLayout):
@@ -25,6 +26,8 @@ class InventoryScreen(MDFloatLayout):
     delete_item = delete_item
     show_add_card = show_add_card
     close_add_card = close_add_card
+    close_edit_card = close_edit_card
+    find_item = find_item
     
 
 class FinancialScreen(MDFloatLayout):
@@ -126,4 +129,3 @@ class DisplayButton(MDButton):
             self.menu = None  
 
         button_text.text = item
-       

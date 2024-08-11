@@ -1,3 +1,4 @@
+from kivy.lang import Builder
 from kivy.uix.checkbox import CheckBox
 from kivy.clock import Clock
 from kivymd.uix.gridlayout import MDGridLayout
@@ -8,6 +9,7 @@ from kivymd.uix.divider import MDDivider
 from kivy.metrics import dp
 import sqlite3
 import math
+from components import KV_NO_INPUT, KV_NOT_FOUND
 
 
 def create_table(self):
@@ -127,7 +129,7 @@ def display_table(self):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    category = button_text.strip()
+    category = button_text.strip() 
     table.clear_widgets() 
     table_head.clear_widgets()
 
@@ -140,6 +142,7 @@ def display_table(self):
     else: 
         c.execute("SELECT id, name, category, description, price, on_order, quantity FROM test_table_3 WHERE category = ?", (category,))
         head = ['Id', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
+    
     items = c.fetchall()
     conn.close()
 
@@ -172,8 +175,6 @@ def display_table(self):
 
 
 def delete_item(self):
-    #Add a password confirmation here
-    
     plus_btn = self.ids.plus_btn
     edit_btn = self.ids.edit_btn
     delete_btn = self.ids.delete_btn
@@ -361,14 +362,16 @@ def load_editing_item(self):
         print('Item not found')
 
     if category_text.text == 'Finished Goods':
+        on_order.opacity = 0
         sales.opacity = 1
         work.opacity = 1
         price.opacity = 1
-        sales.text = sales.text + ': ' + str(current_sales)
-        work.text = work.text + ': ' + str(current_work)
-        price.text = price.text + ': ' + str(current_sale_price)
+        sales.text = 'On Sales Order: ' + str(current_sales)
+        work.text = 'Work In Progress: ' + str(current_work)
+        price.text = 'Sale Price: ' + str(current_sale_price)
         
     else:
+        on_order.opacity = 1
         sales.opacity = 0
         work.opacity = 0
         price.opacity = 0
@@ -379,6 +382,7 @@ def load_editing_item(self):
 def save_edited_item(self):
     name = self.ids.edit_name
     category = self.ids.edit_cat
+    desc = self.ids.edit_des
     on_order = self.ids.edit_order
     quantity = self.ids.edit_qua
     sales = self.ids.edit_sales
@@ -387,6 +391,7 @@ def save_edited_item(self):
 
     name_text = name.text_input
     category_text = category.text_input
+    desc_text = desc.text_input
     on_order_text = on_order.text_input
     quantity_text = quantity.text_input
     sales_text = sales.text_input
@@ -400,12 +405,13 @@ def save_edited_item(self):
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT on_order, work_in_progress, on_sales_order, sale_price, quantity FROM test_table_3 WHERE name LIKE ?", (name_text.text,))
+    c.execute("SELECT description, on_order, work_in_progress, on_sales_order, sale_price, quantity FROM test_table_3 WHERE name LIKE ?", (name_text.text,))
     current = c.fetchone()
 
     if current:
-        current_order, current_work, current_sales, current_sale_price, current_quantity = current
+        current_desc, current_order, current_work, current_sales, current_sale_price, current_quantity = current
 
+    new_desc = desc_text.text if desc_text.text != '' else current_desc
     new_order = int(on_order_text.text) if on_order_text.text != '' else current_order
     new_work = int(work_text.text) if work_text.text != '' else current_work
     new_sales = int(sales_text.text) if sales_text.text != '' else current_sales
@@ -415,21 +421,22 @@ def save_edited_item(self):
     if category_text.text == 'Finished Goods':
         update = """
         UPDATE test_table_3
-        SET work_in_progress = ?, on_sales_order = ?, sale_price = ?, quantity = ?
+        SET description = ?, work_in_progress = ?, on_sales_order = ?, sale_price = ?, quantity = ?
         WHERE name = ?; 
         """
-        c.execute(update, (new_work, new_sales, new_sale_price, new_quantity, name_text.text))
+        c.execute(update, (new_desc, new_work, new_sales, new_sale_price, new_quantity, name_text.text))
     else:
         update = """
         UPDATE test_table_3
-        SET on_order = ?, quantity = ?
+        SET description = ?, on_order = ?, quantity = ?
         WHERE name = ?; 
         """
-        c.execute(update, (new_order, new_quantity, name_text.text))
+        c.execute(update, (new_desc, new_order, new_quantity, name_text.text))
     
     conn.commit()
     conn.close()
 
+    desc_text.text = ''
     on_order_text.text = ''
     quantity_text.text = ''
     sales_text.text = ''
@@ -438,3 +445,76 @@ def save_edited_item(self):
 
     self.display_table()
 
+
+def close_edit_card(self):
+    desc = self.ids.edit_des
+    on_order = self.ids.edit_order
+    quantity = self.ids.edit_qua
+    sales = self.ids.edit_sales
+    work = self.ids.edit_work
+    price = self.ids.edit_sale_price
+
+    desc_text = desc.text_input
+    on_order_text = on_order.text_input
+    quantity_text = quantity.text_input
+    sales_text = sales.text_input
+    work_text = work.text_input
+    price_text = price.text_input
+
+    desc_text.text = ''
+    on_order_text.text = ''
+    quantity_text.text = ''
+    sales_text.text = ''
+    work_text.text = ''
+    price_text.text = ''
+
+
+def find_item(self):
+    name = self.ids.name_input.text.strip()
+    table = self.ids.table_box
+    table_head = self.ids.table_head
+
+    if name:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM test_table_3 WHERE name LIKE ?", (name,))
+        is_found = c.fetchone()
+        if is_found:
+            self.ids.button_text.text = ''
+            table.clear_widgets() 
+            table_head.clear_widgets()
+            category = is_found[2]
+            if category == 'Finished Goods':
+                head = ['Id', 'Name', 'Category', 'Description', 'Quantity', 'On Sales Order', 'Work in Progress', 'Sale Price'] 
+                new_tuple = tuple(x for x in is_found if  x != is_found[4] and x != is_found[6])
+            else: 
+                head = ['Id', 'Name', 'Category', 'Description', 'Price', 'Quantity', 'On Order'] 
+                new_tuple = is_found[:7]
+    
+            items = []
+            items.append(new_tuple)
+            conn.close()
+
+            table_head.add_widget(MDLabel(text='Edit | Delete', halign='center')) 
+
+            for i in head:
+                row = MDLabel(text=i, md_bg_color='lightgray', halign='center', bold=True)
+                table_head.add_widget(row)
+
+            if category == 'Finished Goods':
+                paginated_grid = PaginatedGrid(cols=9, items=items, items_per_page=10)
+            else:
+                paginated_grid = PaginatedGrid(cols=8, items=items, items_per_page=10)
+    
+            table.add_widget(paginated_grid)   
+        else:
+            card = Builder.load_string(KV_NOT_FOUND) 
+            parent_widget = self.parent.parent.parent
+            parent_widget.add_widget(card)
+    else:
+        card = Builder.load_string(KV_NO_INPUT) 
+        parent_widget = self.parent.parent.parent
+        parent_widget.add_widget(card)
+
+    self.ids.name_input.text = ''
+        

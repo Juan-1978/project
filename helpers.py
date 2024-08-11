@@ -58,3 +58,10 @@ def on_drawer_press(self, screen_name):
     box.add_widget(screen)
     nav_drawer = dashboard.ids.get('nav_drawer')
     nav_drawer.set_state('close')
+    
+
+def remove_card(self, button_instance):
+    card = button_instance.parent  
+    parent_layout = card.parent  
+    if parent_layout:
+        parent_layout.remove_widget(card)
