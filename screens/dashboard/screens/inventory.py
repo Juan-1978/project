@@ -9,13 +9,12 @@ from kivymd.uix.divider import MDDivider
 from kivy.metrics import dp
 import sqlite3
 import math
-from components import KV_NO_INPUT, KV_NOT_FOUND
-
+from components import KV_NO_INPUT, KV_NOT_FOUND, KV_EXIST
 
 def create_table(self):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("""CREATE TABLE IF NOT EXISTS test_table_3(
+    c.execute("""CREATE TABLE IF NOT EXISTS inventory(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         category TEXT NOT NULL,
@@ -25,7 +24,28 @@ def create_table(self):
         on_order INT DEFAULT 0,  
         on_sales_order INT DEFAULT 0,
         work_in_progress INT DEFAULT 0,
-        sale_price REAL DEFAULT 0.00
+        sale_price REAL DEFAULT 0.00,
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    c.execute("""CREATE TABLE IF NOT EXISTS expenses(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL,
+        price REAL NOT NULL,
+        quantity INT NOT NULL,
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    c.execute("""CREATE TABLE IF NOT EXISTS incomes(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        sale_price REAL NOT NULL,
+        quantity INT NOT NULL,
+        buyer TEXT,
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -47,17 +67,33 @@ def add_item(self):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    if category == 'Finished Goods':
-         c.execute("INSERT INTO test_table_3 (name, category, description, price, work_in_progress, on_sales_order, sale_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            (name, category, description, price, work_in_progress, on_sales_order, sale_price, quantity)
-        )
+    if name == '':
+        card = Builder.load_string(KV_NO_INPUT) 
+        parent_widget = self.parent.parent.parent
+        parent_widget.add_widget(card)
     else:
-        c.execute("INSERT INTO test_table_3 (name, category, description, price, on_order, quantity) VALUES (?, ?, ?, ?, ?, ?)",
-            (name, category, description, price, on_order, quantity)
-        )
-
-    conn.commit()
-    conn.close()
+        try:
+            if category == 'Finished Goods':
+                c.execute("INSERT INTO inventory (name, category, description, price, work_in_progress, on_sales_order, sale_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (name, category, description, price, work_in_progress, on_sales_order, sale_price, quantity)
+                )
+                if on_sales_order != 0:
+                    c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name, sale_price, on_sales_order))
+            else:
+                c.execute("INSERT INTO inventory (name, category, description, price, on_order, quantity) VALUES (?, ?, ?, ?, ?, ?)",
+                    (name, category, description, price, on_order, quantity)
+                )
+                if category == 'Component' or category == 'Raw Material':
+                    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Manufacturing', price, quantity + on_order))
+                else:
+                    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Operational', price, quantity + on_order))
+            conn.commit()
+            conn.close()
+        except sqlite3.Error as e:
+            card = Builder.load_string(KV_EXIST) 
+            parent_widget = self.parent.parent.parent
+            parent_widget.add_widget(card)
+            print(f"An unexpected error occurred: {e}")
     
     self.ids.add_cat_btn.text = 'Select Category'
     self.ids.item_name.text_input.text = ''
@@ -134,14 +170,14 @@ def display_table(self):
     table_head.clear_widgets()
 
     if category == 'All':
-        c.execute("SELECT id, name, category, description, price, on_order, quantity FROM test_table_3")
-        head = ['Id', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
+        c.execute("SELECT strftime('%Y-%m-%d', date), name, category, description, price, on_order, quantity FROM inventory")
+        head = ['Date', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
     elif category == 'Finished Goods':
-        c.execute("SELECT id, name, category, description, quantity, on_sales_order, work_in_progress, sale_price FROM test_table_3 WHERE category = ?", (category,))
-        head = ['Id', 'Name', 'Category', 'Description', 'Quantity', 'On Sales Order', 'Work in Progress', 'Sale Price'] 
+        c.execute("SELECT strftime('%Y-%m-%d', date), name, category, description, quantity, on_sales_order, work_in_progress, sale_price FROM inventory WHERE category = ?", (category,))
+        head = ['Date', 'Name', 'Category', 'Description', 'Quantity', 'On Sales Order', 'Work in Progress', 'Sale Price'] 
     else: 
-        c.execute("SELECT id, name, category, description, price, on_order, quantity FROM test_table_3 WHERE category = ?", (category,))
-        head = ['Id', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
+        c.execute("SELECT strftime('%Y-%m-%d', date), name, category, description, price, on_order, quantity FROM inventory WHERE category = ?", (category,))
+        head = ['Date', 'Name', 'Category', 'Description', 'Price', 'On Order', 'Quantity'] 
     
     items = c.fetchall()
     conn.close()
@@ -181,11 +217,11 @@ def delete_item(self):
 
     state = GlobalState()
     current_item = state.get_current_item()
-    edit_id = current_item[0]
+    edit_id = current_item[1]
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("DELETE FROM test_table_3 WHERE id = ?", (edit_id,))
+    c.execute("DELETE FROM inventory WHERE name = ?", (edit_id,))
     
     conn.commit()
     conn.close()
@@ -279,15 +315,11 @@ class PaginatedGrid(MDGridLayout):
         end = start + self.items_per_page
 
         for item in self.items[start:end]:
-            #value = item[4] * item[5]
             checkbox = CheckBox(group='group', color=(0, 0, 0, 1))
             checkbox.item = item 
             checkbox.bind(active=self.checkbox_click)
             self.add_widget(checkbox)
-            #updated_item = item + (value,)
-            #item = updated_item
-            updated_item = ('ID-' + str(item[0]),) + item[1:]
-            for i in updated_item:
+            for i in item:
                 row = CustomRow(text=str(i))
                 self.add_widget(row) 
             
@@ -351,7 +383,7 @@ def load_editing_item(self):
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT on_order, work_in_progress, on_sales_order, sale_price, quantity FROM test_table_3 WHERE name LIKE ?", (name_text.text,))
+    c.execute("SELECT on_order, work_in_progress, on_sales_order, sale_price, quantity FROM inventory WHERE name LIKE ?", (name_text.text,))
     current = c.fetchone()
 
     if current:
@@ -405,7 +437,7 @@ def save_edited_item(self):
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT description, on_order, work_in_progress, on_sales_order, sale_price, quantity FROM test_table_3 WHERE name LIKE ?", (name_text.text,))
+    c.execute("SELECT description, on_order, work_in_progress, on_sales_order, sale_price, quantity FROM inventory WHERE name LIKE ?", (name_text.text,))
     current = c.fetchone()
 
     if current:
@@ -420,19 +452,28 @@ def save_edited_item(self):
     
     if category_text.text == 'Finished Goods':
         update = """
-        UPDATE test_table_3
+        UPDATE inventory
         SET description = ?, work_in_progress = ?, on_sales_order = ?, sale_price = ?, quantity = ?
         WHERE name = ?; 
         """
         c.execute(update, (new_desc, new_work, new_sales, new_sale_price, new_quantity, name_text.text))
     else:
         update = """
-        UPDATE test_table_3
+        UPDATE inventory
         SET description = ?, on_order = ?, quantity = ?
         WHERE name = ?; 
         """
         c.execute(update, (new_desc, new_order, new_quantity, name_text.text))
-    
+
+        exp_quantity = new_quantity - current_quantity
+        if isinstance(exp_quantity, int) and exp_quantity > 0:
+            c.execute("SELECT price FROM inventory WHERE name = ?", (name_text.text,))
+            exp_price = c.fetchone
+            if category_text.text == 'Component' or category_text.text == 'Raw Material':
+                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Manufacturing', exp_price, exp_quantity + on_order))
+            else:
+                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Operational', exp_price, exp_quantity + on_order))
+            
     conn.commit()
     conn.close()
 
@@ -477,7 +518,7 @@ def find_item(self):
     if name:
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
-        c.execute("SELECT * FROM test_table_3 WHERE name LIKE ?", (name,))
+        c.execute("SELECT * FROM inventory WHERE name LIKE ?", (name,))
         is_found = c.fetchone()
         if is_found:
             self.ids.button_text.text = ''
@@ -485,10 +526,10 @@ def find_item(self):
             table_head.clear_widgets()
             category = is_found[2]
             if category == 'Finished Goods':
-                head = ['Id', 'Name', 'Category', 'Description', 'Quantity', 'On Sales Order', 'Work in Progress', 'Sale Price'] 
+                head = ['Date', 'Name', 'Category', 'Description', 'Quantity', 'On Sales Order', 'Work in Progress', 'Sale Price'] 
                 new_tuple = tuple(x for x in is_found if  x != is_found[4] and x != is_found[6])
             else: 
-                head = ['Id', 'Name', 'Category', 'Description', 'Price', 'Quantity', 'On Order'] 
+                head = ['Date', 'Name', 'Category', 'Description', 'Price', 'Quantity', 'On Order'] 
                 new_tuple = is_found[:7]
     
             items = []

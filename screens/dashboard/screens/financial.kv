@@ -1,11 +1,179 @@
-<FinancialScreen>
-    Label:
-        text: "FINANCIAL"
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        color: 'black'
+<FinancialSection>
+    size_hint: None, None
+    size: '300dp', '300dp'
+    pos_hint: {'center_y': 0.5}
 
-    TextInput:
-        hint_text: "Type something"
-        size_hint: None, None
-        size: '150dp', '50dp'
-        pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+<ExpensesRow>
+    orientation: 'vertical'
+
+    MDDivider:
+
+    MDLabel:
+        text: root.text
+        halign: root.halign_value
+        font_size: '14sp'
+
+<SheetGrid>:
+    cols: root.cols
+    row_default_height: '45dp'
+    row_force_default: True
+    height: self.minimum_height
+
+<TypeButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<FinancialScreen>
+    MDBoxLayout:
+        id: financial_box
+        size: root.size
+        pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+        orientation: 'horizontal'
+        spacing: '25dp'
+
+        Widget:
+
+        FinancialSection:
+            id: exp_btn
+            on_press: root.show_exp()
+            MDLabel:
+                text: 'Costs and Expenses'
+                halign: 'center'
+                font_size: '24sp'
+                bold: True
+            
+        FinancialSection:
+            id: sales_btn
+            MDLabel:
+                text: 'Sales and Income'
+                halign: 'center'
+
+        FinancialSection:
+            id:rep_btn
+            MDLabel:
+                text: 'Financial Reports'
+                halign: 'center'
+
+        Widget:
+
+    MDCard:
+        id: exp_box
+        opacity: 0
+        disabled: True
+        style: 'elevated'
+        size_hint: 0.9, 0.85
+        pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+        padding: [60, 15, 30, 15]
+        #spacing: '10dp'
+        orientation: 'vertical'
+        
+        MDBoxLayout:
+            size_hint: 1, 0.15
+            padding: '15dp'
+            spacing: '10dp'
+            orientation: 'horizontal'
+
+            MDLabel:
+                id: exp_lable
+                text: 'EXPENSES'
+                halign: 'center'
+                valign: 'middle'
+
+            MDLabel:
+                text: 'Type:'
+                halign: 'right'
+
+            TypeButton:
+                id: type_input
+                MDButtonText:
+                    id: type_btn
+                    text: 'All'
+                    halign: 'left'
+                    on_text: root.display_exp()
+                MDButtonIcon:
+                    icon: 'menu'
+                    style: "standard"
+                    theme_font_size: "Custom"
+                    font_size: "16sp"
+                    radius: [self.height / 2, ]
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+
+            Widget:
+
+            MDBoxLayout:
+                size_hint: None, None
+                size: dp(100), dp(35)
+                spacing: 0
+                Button:
+                    id: prev_exp_btn
+                    text: '<'
+                    color: 'black'
+                    background_normal: ''
+                    background_color: financial_box.md_bg_color
+                    size_hint: None, None
+                    size: dp(35), dp(35)
+                    font_size: '24sp'
+
+                Label:
+                    id: exp_id
+                    text: root.ids.sheet_box.page_id
+                    size_hint: None, None
+                    size: dp(35), dp(35)
+                    color: 'black'
+                    font_size: '14sp'
+
+                Button:
+                    id: next_exp_btn
+                    text: '>'
+                    size_hint: None, None
+                    size: dp(35), dp(35)
+                    color: 'black'
+                    background_normal: ''
+                    background_color: financial_box.md_bg_color
+                    font_size: '24sp'
+
+            Widget:
+
+            MDBoxLayout:
+                md_bg_color: 'lightgray'
+                MDLabel:
+                    text: 'TOTAL:'
+                    halign: 'right'
+
+                MDLabel:
+                    id: total_exp
+                    text:'$ '+'00.00'
+                    halign: 'right'
+                    bold: True
+
+        MDBoxLayout:
+            id: sheet_head
+            size_hint: 1, 0.1
+            padding: [0, 0, 35, 0]
+
+        SheetGrid:
+            id: sheet_box
+            padding: [0, 0, 35, 0]
+
+    MDTopAppBar:
+        size_hint: 1, 0.09
+
+    MDFabButton:
+        id: back_btn
+        opacity: 0
+        disabled: True
+        icon: 'arrow-left'
+        pos_hint: {'center_x': 0.88, 'center_y': 0.07}
+        on_press: root.go_back()
+            
+    MDFabButton:
+        id: plus_exp_btn
+        opacity: 0
+        disabled: True
+        icon: 'plus'
+        pos_hint: {'center_x': 0.93, 'center_y': 0.07}
+        #on_press: root.go_back()

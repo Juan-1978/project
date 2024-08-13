@@ -1,15 +1,15 @@
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel
+from kivymd.uix.label import MDLabel, MDIcon
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.button import MDButton
-from kivymd.uix.tooltip import MDTooltip
+from kivymd.uix.card import MDCard
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
+from kivy.uix.button import Button, ButtonBehavior
 from kivy.properties import StringProperty
 from kivy.metrics import dp
 from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
-
+from screens.dashboard.screens.financial import show_exp, go_back, display_exp
 
 class InventoryScreen(MDFloatLayout):
     def __init__(self, *args, **kwargs):
@@ -31,7 +31,10 @@ class InventoryScreen(MDFloatLayout):
     
 
 class FinancialScreen(MDFloatLayout):
-    pass
+    show_exp = show_exp
+    go_back = go_back
+    display_exp = display_exp
+
 
 class SalesScreen(MDFloatLayout):
     pass
@@ -129,3 +132,35 @@ class DisplayButton(MDButton):
             self.menu = None  
 
         button_text.text = item
+
+class FinancialSection(MDCard, ButtonBehavior):
+    pass
+        
+
+class TypeButton(MDButton):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = ["All", "Manufacturing", "Operational"]
+        
+        self.menu = None
+        self.on_release = self.show_menu
+        
+    def show_menu(self, *args):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        parent_widget = self.parent.parent.parent
+        type_btn = parent_widget.ids.get('type_btn')
+
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
+        type_btn.text = item
