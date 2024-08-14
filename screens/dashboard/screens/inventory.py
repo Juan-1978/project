@@ -457,6 +457,9 @@ def save_edited_item(self):
         WHERE name = ?; 
         """
         c.execute(update, (new_desc, new_work, new_sales, new_sale_price, new_quantity, name_text.text))
+
+        if sales_text.text != '' and new_sales > 0:
+            c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name, new_sale_price, new_sales))
     else:
         update = """
         UPDATE inventory
@@ -465,14 +468,14 @@ def save_edited_item(self):
         """
         c.execute(update, (new_desc, new_order, new_quantity, name_text.text))
 
-        exp_quantity = new_quantity - current_quantity
-        if isinstance(exp_quantity, int) and exp_quantity > 0:
+        exp_quantity = (new_quantity + new_order) - current_quantity
+        if isinstance(exp_quantity, int) and exp_quantity + new_order > 0:
             c.execute("SELECT price FROM inventory WHERE name = ?", (name_text.text,))
-            exp_price = c.fetchone
+            exp_price = c.fetchone()
             if category_text.text == 'Component' or category_text.text == 'Raw Material':
-                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Manufacturing', exp_price, exp_quantity + on_order))
+                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Manufacturing', exp_price[0], exp_quantity + new_order))
             else:
-                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Operational', exp_price, exp_quantity + on_order))
+                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Operational', exp_price[0], exp_quantity + new_order))
             
     conn.commit()
     conn.close()

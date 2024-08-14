@@ -47,7 +47,6 @@ class SheetGrid(MDGridLayout):
     cols = NumericProperty(6)
     page = NumericProperty(0)
     items_per_page = NumericProperty(10)
-    checked_box = ObjectProperty(None, allownone=True)
     page_id = StringProperty()
     current_item = ObjectProperty(None, allownone=True) 
 
@@ -57,6 +56,7 @@ class SheetGrid(MDGridLayout):
 
     def update_grid(self):
         self.clear_widgets()
+        self.total = 0
         start = self.page * self.items_per_page
         end = start + self.items_per_page
 
@@ -91,7 +91,7 @@ class SheetGrid(MDGridLayout):
     def update_columns(self, num_cols):
         self.cols = num_cols
 
-    
+
 class ExpensesRow(MDBoxLayout):
     text = StringProperty('')
 
@@ -120,10 +120,10 @@ def display_exp(self):
     sheet_head.clear_widgets()
     sheet_box.clear_widgets() 
 
-    if type == 'All':
+    if type.strip() == 'All':
         c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses")
     else:
-        c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses WHERE type = ?", (type,))
+        c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses WHERE type = ?", (type.strip(),))
     
     head = ['Date', 'Name', 'Type', 'Quantity', 'Price', 'Sub-Total'] 
     
@@ -138,4 +138,40 @@ def display_exp(self):
     
     sheet_box.add_widget(sheed_grid)
 
+    self.ids.prev_exp_btn.on_press = sheed_grid.prev_page
+    self.ids.next_exp_btn.on_press = sheed_grid.next_page
+
            
+def add_exp(self):
+    name = self.ids.exp_name.text_input.text
+    quantity = int(self.ids.exp_qua.text_input.text)
+    price = float(self.ids.exp_price.text_input.text)
+
+    conn = sqlite3.connect('database.db') 
+    c = conn.cursor()
+    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Unforeseen', price, quantity))
+    conn.commit()
+    conn.close()
+
+    self.close_add_exp()
+    self.display_exp()
+
+
+def close_add_exp(self):
+    self.ids.exp_name.text_input.text = ''
+    self.ids.exp_qua.text_input.text = ''
+    self.ids.exp_price.text_input.text = ''
+    
+
+def return_total(self):
+    conn = sqlite3.connect('database.db') 
+    c = conn.cursor()
+    c.execute("SELECT price, quantity FROM expenses")
+    items = c.fetchall()
+    conn.close()
+    total = 0
+
+    for item in items:
+        total += item[0] * item[1]
+    
+    return total

@@ -9,7 +9,7 @@ from kivy.uix.button import Button, ButtonBehavior
 from kivy.properties import StringProperty
 from kivy.metrics import dp
 from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
-from screens.dashboard.screens.financial import show_exp, go_back, display_exp
+from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, return_total
 
 class InventoryScreen(MDFloatLayout):
     def __init__(self, *args, **kwargs):
@@ -34,6 +34,9 @@ class FinancialScreen(MDFloatLayout):
     show_exp = show_exp
     go_back = go_back
     display_exp = display_exp
+    add_exp = add_exp
+    close_add_exp = close_add_exp
+    return_total = return_total
 
 
 class SalesScreen(MDFloatLayout):
@@ -140,7 +143,7 @@ class FinancialSection(MDCard, ButtonBehavior):
 class TypeButton(MDButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.items = ["All", "Manufacturing", "Operational"]
+        self.items = ["All         ", "Manufacturing", "Operational", "Unforeseen"]
         
         self.menu = None
         self.on_release = self.show_menu
@@ -164,3 +167,18 @@ class TypeButton(MDButton):
             self.menu = None  
 
         type_btn.text = item
+
+
+class AddExp(MDBoxLayout):
+    text = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size_hint_y = None  
+        self.text_input = TextInput()     
+        self.add_widgets()
+
+    def add_widgets(self):
+        self.add_widget(
+            MDLabel(text=self.text)
+        )

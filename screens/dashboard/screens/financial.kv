@@ -26,6 +26,23 @@
     size: dp(135), dp(35)
     radius: [0, 0, 0, 0]
 
+<AddExp>
+    orientation: 'vertical'
+    spacing: '10dp'
+    size_hint_x: 0.25
+    pos_hint: {'center_y': 0.85}
+
+    MDLabel:
+        text: root.text
+        halign: 'center'
+        valign: 'top'
+
+    TextInput:
+        text: root.text_input.text
+        on_text: root.text_input.text = self.text
+        size_hint_y: None
+        height: '30dp'
+
 <FinancialScreen>
     MDBoxLayout:
         id: financial_box
@@ -72,7 +89,7 @@
         
         MDBoxLayout:
             size_hint: 1, 0.15
-            padding: '15dp'
+            padding: '35dp'
             spacing: '10dp'
             orientation: 'horizontal'
 
@@ -105,49 +122,16 @@
             Widget:
 
             MDBoxLayout:
-                size_hint: None, None
-                size: dp(100), dp(35)
-                spacing: 0
-                Button:
-                    id: prev_exp_btn
-                    text: '<'
-                    color: 'black'
-                    background_normal: ''
-                    background_color: financial_box.md_bg_color
-                    size_hint: None, None
-                    size: dp(35), dp(35)
-                    font_size: '24sp'
-
-                Label:
-                    id: exp_id
-                    text: root.ids.sheet_box.page_id
-                    size_hint: None, None
-                    size: dp(35), dp(35)
-                    color: 'black'
-                    font_size: '14sp'
-
-                Button:
-                    id: next_exp_btn
-                    text: '>'
-                    size_hint: None, None
-                    size: dp(35), dp(35)
-                    color: 'black'
-                    background_normal: ''
-                    background_color: financial_box.md_bg_color
-                    font_size: '24sp'
-
-            Widget:
-
-            MDBoxLayout:
                 md_bg_color: 'lightgray'
+                #padding: [0, 0, 15, 0]
                 MDLabel:
-                    text: 'TOTAL:'
+                    text: 'TOTAL:   '
                     halign: 'right'
 
                 MDLabel:
                     id: total_exp
-                    text:'$ '+'00.00'
-                    halign: 'right'
+                    text: str(root.return_total()) + '0'
+                    halign: 'left'
                     bold: True
 
         MDBoxLayout:
@@ -158,6 +142,39 @@
         SheetGrid:
             id: sheet_box
             padding: [0, 0, 35, 0]
+
+        MDBoxLayout:
+            size_hint: None, None
+            size: dp(100), dp(35)
+            pos_hint: {'center_x': 0.95, 'center_y': 0.1}
+            spacing: 0
+            Button:
+                id: prev_exp_btn
+                text: '<'
+                color: 'black'
+                background_normal: ''
+                background_color: financial_box.md_bg_color
+                size_hint: None, None
+                size: dp(35), dp(35)
+                font_size: '24sp'
+
+            Label:
+                id: exp_id
+                text: root.ids.sheet_box.page_id
+                size_hint: None, None
+                size: dp(35), dp(35)
+                color: 'black'
+                font_size: '14sp'
+
+            Button:
+                id: next_exp_btn
+                text: '>'
+                size_hint: None, None
+                size: dp(35), dp(35)
+                color: 'black'
+                background_normal: ''
+                background_color: financial_box.md_bg_color
+                font_size: '24sp'
 
     MDTopAppBar:
         size_hint: 1, 0.09
@@ -176,4 +193,50 @@
         disabled: True
         icon: 'plus'
         pos_hint: {'center_x': 0.93, 'center_y': 0.07}
-        #on_press: root.go_back()
+        on_press: add_exp_drawer.set_state('toggle')
+
+    MDNavigationLayout:
+            
+        MDNavigationDrawer:
+            id: add_exp_drawer
+            size_hint: 0.8, 0.45
+            pos_hint: {'center_y': 0.5, 'center_y': 0.5}
+            spacing: '10dp'
+            orientation: 'vertical'
+            on_close: root.close_add_exp()
+
+            MDLabel:
+                text: 'Add an unforeseen expense'
+
+            MDBoxLayout:
+                id: add_item_card
+                orientation: 'horizontal'
+                spacing: '15dp'
+            
+                Widget:
+
+                AddExp:
+                    id: exp_name
+                    text: 'Name'
+
+                AddExp:
+                    id: exp_qua
+                    text: 'Quantity'
+
+                AddExp:
+                    id: exp_price
+                    text: 'Price'
+
+                Widget:
+
+            MDButton:
+                id: exp_submit
+                style: 'filled'
+                size_hint: 0.2, None
+                height: '35dp'
+                pos_hint: {'center_x': 0.75}
+                on_press: 
+                    add_exp_drawer.set_state('toggle')
+                    root.add_exp()
+                MDButtonText:
+                    text: 'Submit'
