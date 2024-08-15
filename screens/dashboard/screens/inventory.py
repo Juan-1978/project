@@ -459,7 +459,7 @@ def save_edited_item(self):
         c.execute(update, (new_desc, new_work, new_sales, new_sale_price, new_quantity, name_text.text))
 
         if sales_text.text != '' and new_sales > 0:
-            c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name, new_sale_price, new_sales))
+            c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name_text.text, new_sale_price, new_sales))
     else:
         update = """
         UPDATE inventory

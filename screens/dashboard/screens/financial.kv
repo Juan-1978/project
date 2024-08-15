@@ -19,7 +19,20 @@
     row_force_default: True
     height: self.minimum_height
 
+<IncomeSheetGrid>:
+    cols: root.cols
+    row_default_height: '45dp'
+    row_force_default: True
+    height: self.minimum_height
+
 <TypeButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<MonthButton>
     style: 'outlined'
     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
     size_hint: None, None
@@ -64,9 +77,11 @@
             
         FinancialSection:
             id: sales_btn
+            on_press: root.show_inc()
             MDLabel:
                 text: 'Sales and Income'
                 halign: 'center'
+                bold: True
 
         FinancialSection:
             id:rep_btn
@@ -195,6 +210,14 @@
         pos_hint: {'center_x': 0.93, 'center_y': 0.07}
         on_press: add_exp_drawer.set_state('toggle')
 
+    MDFabButton:
+        id: back_inc_btn
+        opacity: 0
+        disabled: True
+        icon: 'arrow-left'
+        pos_hint: {'center_x': 0.93, 'center_y': 0.07}
+        on_press: root.go_back()
+
     MDNavigationLayout:
             
         MDNavigationDrawer:
@@ -240,3 +263,103 @@
                     root.add_exp()
                 MDButtonText:
                     text: 'Submit'
+
+    MDCard:
+        id: inc_box
+        opacity: 0
+        disabled: True
+        style: 'elevated'
+        size_hint: 0.9, 0.85
+        pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+        padding: [60, 15, 30, 15]
+        #spacing: '10dp'
+        orientation: 'vertical'
+        
+        MDBoxLayout:
+            size_hint: 1, 0.15
+            padding: '35dp'
+            spacing: '10dp'
+            orientation: 'horizontal'
+
+            MDLabel:
+                id: inc_lable
+                text: 'INCOME'
+                halign: 'center'
+                valign: 'middle'
+
+            MDLabel:
+                text: 'Month:'
+                halign: 'right'
+
+            MonthButton:
+                id: month_input
+                MDButtonText:
+                    id: month_btn
+                    text: root.current_month()
+                    halign: 'left'
+                    on_text: root.display_inc()
+                MDButtonIcon:
+                    icon: 'menu'
+                    style: "standard"
+                    theme_font_size: "Custom"
+                    font_size: "16sp"
+                    radius: [self.height / 2, ]
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+
+            Widget:
+
+            MDBoxLayout:
+                md_bg_color: 'lightgray'
+                #padding: [0, 0, 15, 0]
+                MDLabel:
+                    text: 'TOTAL:   '
+                    halign: 'right'
+
+                MDLabel:
+                    id: total_inc
+                    #text: str(root.return_total()) + '0'
+                    halign: 'left'
+                    bold: True
+
+        MDBoxLayout:
+            id: inc_sheet_head
+            size_hint: 1, 0.1
+            padding: [0, 0, 35, 0]
+
+        SheetGrid:
+            id: inc_sheet_box
+            padding: [0, 0, 35, 0]
+
+        MDBoxLayout:
+            size_hint: None, None
+            size: dp(100), dp(35)
+            pos_hint: {'center_x': 0.95, 'center_y': 0.1}
+            spacing: 0
+            Button:
+                id: prev_inc_btn
+                text: '<'
+                color: 'black'
+                background_normal: ''
+                background_color: financial_box.md_bg_color
+                size_hint: None, None
+                size: dp(35), dp(35)
+                font_size: '24sp'
+
+            Label:
+                id: inc_id
+                text: root.ids.inc_sheet_box.page_id
+                size_hint: None, None
+                size: dp(35), dp(35)
+                color: 'black'
+                font_size: '14sp'
+
+            Button:
+                id: next_inc_btn
+                text: '>'
+                size_hint: None, None
+                size: dp(35), dp(35)
+                color: 'black'
+                background_normal: ''
+                background_color: financial_box.md_bg_color
+                font_size: '24sp'

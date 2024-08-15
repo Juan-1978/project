@@ -8,8 +8,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button, ButtonBehavior
 from kivy.properties import StringProperty
 from kivy.metrics import dp
+from datetime import datetime
 from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
-from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, return_total
+from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, return_total, display_inc, show_inc, current_month
 
 class InventoryScreen(MDFloatLayout):
     def __init__(self, *args, **kwargs):
@@ -37,6 +38,9 @@ class FinancialScreen(MDFloatLayout):
     add_exp = add_exp
     close_add_exp = close_add_exp
     return_total = return_total
+    display_inc = display_inc
+    show_inc = show_inc
+    current_month = current_month
 
 
 class SalesScreen(MDFloatLayout):
@@ -182,3 +186,32 @@ class AddExp(MDBoxLayout):
         self.add_widget(
             MDLabel(text=self.text)
         )
+
+
+class MonthButton(MDButton):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+       
+        self.menu = None
+        self.on_release = self.show_menu
+        
+    def show_menu(self, *args):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        parent_widget = self.parent.parent.parent
+        month_btn = parent_widget.ids.get('month_btn')
+
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
+        month_btn.text = item
