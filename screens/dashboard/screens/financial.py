@@ -55,7 +55,6 @@ class SheetGrid(MDGridLayout):
     page = NumericProperty(0)
     items_per_page = NumericProperty(10)
     page_id = StringProperty()
-    current_item = ObjectProperty(None, allownone=True) 
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -66,14 +65,18 @@ class SheetGrid(MDGridLayout):
         self.total = 0
         start = self.page * self.items_per_page
         end = start + self.items_per_page
+        total = 0
+        state = ExpenseState()
 
         for item in self.items[start:end]:
             value = item[3] * item[4]
+            total += value
             updated_item = item + (value,)
             for i in updated_item:
                 row = ExpensesRow(text=str(i))
                 self.add_widget(row) 
             
+        state.set_current_item(total)    
         Clock.schedule_once(self.update_page, 0.1)
 
     def next_page(self):
@@ -120,89 +123,9 @@ def display_exp(self):
     sheet_head = self.ids.sheet_head
     sheet_box = self.ids.sheet_box
     type = self.ids.type_btn.text
-
-    conn = sqlite3.connect('database.db') 
-    c = conn.cursor()
-
-    sheet_head.clear_widgets()
-    sheet_box.clear_widgets() 
-
-    if type.strip() == 'All':
-        c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses")
-    else:
-        c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses WHERE type = ?", (type.strip(),))
-    
-    head = ['Date', 'Name', 'Type', 'Quantity', 'Price', 'Sub-Total'] 
-    
-    items = c.fetchall()
-    conn.close()
-
-    for i in head:
-        row = MDLabel(text=i, md_bg_color='lightgray', halign='center', bold=True)
-        sheet_head.add_widget(row)
-
-    sheed_grid = SheetGrid(cols=6, items=items, items_per_page=10)
-    
-    sheet_box.add_widget(sheed_grid)
-
-    self.ids.prev_exp_btn.on_press = sheed_grid.prev_page
-    self.ids.next_exp_btn.on_press = sheed_grid.next_page
-
-           
-def add_exp(self):
-    name = self.ids.exp_name.text_input.text
-    quantity = int(self.ids.exp_qua.text_input.text)
-    price = float(self.ids.exp_price.text_input.text)
-
-    conn = sqlite3.connect('database.db') 
-    c = conn.cursor()
-    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Unforeseen', price, quantity))
-    conn.commit()
-    conn.close()
-
-    self.close_add_exp()
-    self.display_exp()
-
-
-def close_add_exp(self):
-    self.ids.exp_name.text_input.text = ''
-    self.ids.exp_qua.text_input.text = ''
-    self.ids.exp_price.text_input.text = ''
-    
-
-def return_total(self):
-    conn = sqlite3.connect('database.db') 
-    c = conn.cursor()
-    c.execute("SELECT price, quantity FROM expenses")
-    items = c.fetchall()
-    conn.close()
-    total = 0
-
-    for item in items:
-        total += item[0] * item[1]
-    
-    return total
-
-
-def show_inc(self):
-    financial_box = self.ids.financial_box
-    inc_box = self.ids.inc_box
-    back_btn = self.ids.back_inc_btn
-
-    financial_box.opacity = 0
-    financial_box.disabled = True
-    inc_box.opacity = 1
-    inc_box.disabled = False
-    back_btn.opacity = 1
-    back_btn.disabled = False
-
-    self.display_inc()
-
-
-def display_inc(self):
-    sheet_head = self.ids.inc_sheet_head
-    sheet_box = self.ids.inc_sheet_box
-    month = self.ids.month_btn.text
+    month = self.ids.exp_month_btn.text
+    year = self.ids.exp_year_btn.text
+    total_exp = self.ids.total_exp
 
     conn = sqlite3.connect('database.db') 
     c = conn.cursor()
@@ -237,10 +160,111 @@ def display_inc(self):
     elif month == 'December':
         num = '12'
 
-    year = datetime.now().year
     date = f'{year}-{num}'
 
-    print(month, num)
+    if type.strip() == 'All':
+        c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses WHERE strftime('%Y-%m', date) = ?", (date,))
+    else:
+        c.execute("SELECT strftime('%Y-%m-%d', date), name, type, quantity, price FROM expenses WHERE type = ? AND strftime('%Y-%m', date) = ?", (type.strip(), date))
+    
+    head = ['Date', 'Name', 'Type', 'Quantity', 'Price', 'Sub-Total'] 
+    
+    items = c.fetchall()
+    conn.close()
+
+    for i in head:
+        row = MDLabel(text=i, md_bg_color='lightgray', halign='center', bold=True)
+        sheet_head.add_widget(row)
+
+    sheed_grid = SheetGrid(cols=6, items=items, items_per_page=10)
+    
+    sheet_box.add_widget(sheed_grid)
+
+    self.ids.prev_exp_btn.on_press = sheed_grid.prev_page
+    self.ids.next_exp_btn.on_press = sheed_grid.next_page
+
+    state = ExpenseState()
+    total = state.get_current_item()
+    total_exp.text = str(total) + '0'
+
+           
+def add_exp(self):
+    name = self.ids.exp_name.text_input.text
+    quantity = int(self.ids.exp_qua.text_input.text)
+    price = float(self.ids.exp_price.text_input.text)
+
+    conn = sqlite3.connect('database.db') 
+    c = conn.cursor()
+    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Unforeseen', price, quantity))
+    conn.commit()
+    conn.close()
+
+    self.close_add_exp()
+    self.display_exp()
+
+
+def close_add_exp(self):
+    self.ids.exp_name.text_input.text = ''
+    self.ids.exp_qua.text_input.text = ''
+    self.ids.exp_price.text_input.text = ''
+
+
+def show_inc(self):
+    financial_box = self.ids.financial_box
+    inc_box = self.ids.inc_box
+    back_btn = self.ids.back_inc_btn
+
+    financial_box.opacity = 0
+    financial_box.disabled = True
+    inc_box.opacity = 1
+    inc_box.disabled = False
+    back_btn.opacity = 1
+    back_btn.disabled = False
+
+    self.display_inc()
+
+
+def display_inc(self):
+    sheet_head = self.ids.inc_sheet_head
+    sheet_box = self.ids.inc_sheet_box
+    month = self.ids.month_btn.text
+    year = self.ids.year_btn.text
+    total_inc = self.ids.total_inc
+
+    conn = sqlite3.connect('database.db') 
+    c = conn.cursor()
+
+    sheet_head.clear_widgets()
+    sheet_box.clear_widgets() 
+
+    num = '00'
+
+    if month == 'January':
+        num = '01'
+    elif month == 'February':
+        num = '02'
+    elif month == 'March':
+        num = '03'
+    elif month == 'April':
+        num = '04'
+    elif month == 'May':
+        num = '05'
+    elif month == 'June':
+        num = '06'
+    elif month == 'July':
+        num = '07'
+    elif month == 'August':
+        num = '08'
+    elif month == 'September':
+        num = '09'
+    elif month == 'October':
+        num = '10'
+    elif month == 'November':
+        num = '11'
+    elif month == 'December':
+        num = '12'
+
+    date = f'{year}-{num}'
     
     c.execute("SELECT strftime('%Y-%m-%d', date), name, quantity, sale_price FROM incomes WHERE strftime('%Y-%m', date) = ?", (date,))
     
@@ -253,12 +277,48 @@ def display_inc(self):
         row = MDLabel(text=i, md_bg_color='lightgray', halign='center', bold=True)
         sheet_head.add_widget(row)
 
-    inc_sheed_grid = IncomeSheetGrid(cols=5, items=items, items_per_page=10)
+    inc_sheet_grid = IncomeSheetGrid(cols=5, items=items, items_per_page=10)
     
-    sheet_box.add_widget(inc_sheed_grid)
+    sheet_box.add_widget(inc_sheet_grid)
 
-    self.ids.prev_inc_btn.on_press = inc_sheed_grid.prev_page
-    self.ids.next_inc_btn.on_press = inc_sheed_grid.next_page
+    self.ids.prev_inc_btn.on_press = inc_sheet_grid.prev_page
+    self.ids.next_inc_btn.on_press = inc_sheet_grid.next_page
+    
+    state = IncomeState() 
+    total = state.get_current_item()
+    total_inc.text = str(total) + '0'
+
+
+class IncomeState:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(IncomeState, cls).__new__(cls)
+            cls._instance.current_item = None
+        return cls._instance
+
+    def set_current_item(self, item):
+        self.current_item = item
+
+    def get_current_item(self):
+        return self.current_item
+    
+
+class ExpenseState:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(ExpenseState, cls).__new__(cls)
+            cls._instance.current_item = None
+        return cls._instance
+
+    def set_current_item(self, item):
+        self.current_item = item
+
+    def get_current_item(self):
+        return self.current_item
 
 
 class IncomeSheetGrid(MDGridLayout):
@@ -267,7 +327,6 @@ class IncomeSheetGrid(MDGridLayout):
     page = NumericProperty(0)
     items_per_page = NumericProperty(10)
     page_id = StringProperty()
-    current_item = ObjectProperty(None, allownone=True) 
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -278,15 +337,19 @@ class IncomeSheetGrid(MDGridLayout):
         self.total = 0
         start = self.page * self.items_per_page
         end = start + self.items_per_page
+        total = 0
+        state = IncomeState()
 
         for item in self.items[start:end]:
             value = item[2] * item[3]
+            total += value
             updated_item = item + (value,)
             for i in updated_item:
                 row = ExpensesRow(text=str(i))
                 self.add_widget(row) 
-            
-        Clock.schedule_once(self.update_page, 0.1)
+
+        state.set_current_item(total)
+        Clock.schedule_once(self.update_page, 0.1)      
 
     def next_page(self):
         if (self.page + 1) * self.items_per_page < len(self.items):
@@ -342,3 +405,9 @@ def current_month(self):
         str_month = 'December'
 
     return str_month
+    
+
+def current_year(self):
+    current = datetime.now().date()
+    year = current.year
+    return year

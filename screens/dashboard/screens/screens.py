@@ -8,9 +8,10 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button, ButtonBehavior
 from kivy.properties import StringProperty
 from kivy.metrics import dp
-from datetime import datetime
+import sqlite3
 from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
-from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, return_total, display_inc, show_inc, current_month
+from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, display_inc, show_inc, current_month, current_year
+
 
 class InventoryScreen(MDFloatLayout):
     def __init__(self, *args, **kwargs):
@@ -32,16 +33,20 @@ class InventoryScreen(MDFloatLayout):
     
 
 class FinancialScreen(MDFloatLayout):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #self.display_inc()
+
     show_exp = show_exp
     go_back = go_back
     display_exp = display_exp
     add_exp = add_exp
     close_add_exp = close_add_exp
-    return_total = return_total
     display_inc = display_inc
     show_inc = show_inc
     current_month = current_month
-
+    current_year = current_year
+    
 
 class SalesScreen(MDFloatLayout):
     pass
@@ -215,3 +220,112 @@ class MonthButton(MDButton):
             self.menu = None  
 
         month_btn.text = item
+
+
+class ExpenseMonthButton(MDButton):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+       
+        self.menu = None
+        self.on_release = self.show_menu
+        
+    def show_menu(self, *args):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        parent_widget = self.parent.parent.parent
+        month_btn = parent_widget.ids.get('exp_month_btn')
+
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
+        month_btn.text = item
+        
+
+class IncomeYearButton(MDButton):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = []
+
+        conn = sqlite3.connect('database.db') 
+        c = conn.cursor()
+        c.execute("SELECT strftime('%Y', date) FROM incomes")
+        years = c.fetchall()
+        conn.close()
+
+        for year in years:
+            i = year[0]
+            if i not in self.items:
+                self.items.append(i)
+        
+        self.menu = None
+        self.on_release = self.show_menu
+        
+    def show_menu(self, *args):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        parent_widget = self.parent.parent.parent
+        year_btn = parent_widget.ids.get('year_btn')
+
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
+        year_btn.text = item
+
+
+class ExpenseYearButton(MDButton):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = []
+
+        conn = sqlite3.connect('database.db') 
+        c = conn.cursor()
+        c.execute("SELECT strftime('%Y', date) FROM expenses")
+        years = c.fetchall()
+        conn.close()
+
+        for year in years:
+            i = year[0]
+            if i not in self.items:
+                self.items.append(i)
+        
+        self.menu = None
+        self.on_release = self.show_menu
+        
+    def show_menu(self, *args):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        parent_widget = self.parent.parent.parent
+        year_btn = parent_widget.ids.get('exp_year_btn')
+
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
+        year_btn.text = item

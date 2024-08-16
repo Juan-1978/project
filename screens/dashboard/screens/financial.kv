@@ -39,6 +39,27 @@
     size: dp(135), dp(35)
     radius: [0, 0, 0, 0]
 
+<ExpenseMonthButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<IncomeYearButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<ExpenseYearButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]    
+
 <AddExp>
     orientation: 'vertical'
     spacing: '10dp'
@@ -134,7 +155,47 @@
                     size_hint: None, None
                     size: "30dp", "30dp"
 
-            Widget:
+            MDLabel:
+                text: 'Month:'
+                halign: 'right'
+
+            ExpenseMonthButton:
+                id: exp_month_input
+                MDButtonText:
+                    id: exp_month_btn
+                    text: root.current_month()
+                    halign: 'left'
+                    on_text: root.display_exp()
+                MDButtonIcon:
+                    icon: 'menu'
+                    style: "standard"
+                    theme_font_size: "Custom"
+                    font_size: "16sp"
+                    radius: [self.height / 2, ]
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+
+            MDLabel:
+                text: 'Year:'
+                halign: 'right'
+
+            ExpenseYearButton:
+                id: exp_year_input
+                MDButtonText:
+                    id: exp_year_btn
+                    text: str(root.current_year())
+                    halign: 'left'
+                    on_text: root.display_exp()
+                MDButtonIcon:
+                    icon: 'menu'
+                    style: "standard"
+                    theme_font_size: "Custom"
+                    font_size: "16sp"
+                    radius: [self.height / 2, ]
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+
+            Widget:        
 
             MDBoxLayout:
                 md_bg_color: 'lightgray'
@@ -145,7 +206,7 @@
 
                 MDLabel:
                     id: total_exp
-                    text: str(root.return_total()) + '0'
+                    #text: str(root.return_total()) + '0'
                     halign: 'left'
                     bold: True
 
@@ -307,6 +368,26 @@
                     size_hint: None, None
                     size: "30dp", "30dp"
 
+            MDLabel:
+                text: 'Year:'
+                halign: 'right'
+
+            IncomeYearButton:
+                id: year_input
+                MDButtonText:
+                    id: year_btn
+                    text: str(root.current_year())
+                    halign: 'left'
+                    on_text: root.display_inc()
+                MDButtonIcon:
+                    icon: 'menu'
+                    style: "standard"
+                    theme_font_size: "Custom"
+                    font_size: "16sp"
+                    radius: [self.height / 2, ]
+                    size_hint: None, None
+                    size: "30dp", "30dp"
+
             Widget:
 
             MDBoxLayout:
@@ -318,7 +399,6 @@
 
                 MDLabel:
                     id: total_inc
-                    #text: str(root.return_total()) + '0'
                     halign: 'left'
                     bold: True
 
@@ -327,7 +407,7 @@
             size_hint: 1, 0.1
             padding: [0, 0, 35, 0]
 
-        SheetGrid:
+        IncomeSheetGrid:
             id: inc_sheet_box
             padding: [0, 0, 35, 0]
 
