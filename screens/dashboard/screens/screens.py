@@ -10,7 +10,7 @@ from kivy.properties import StringProperty
 from kivy.metrics import dp
 import sqlite3
 from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
-from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, display_inc, show_inc, current_month, current_year
+from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, display_inc, show_inc, current_month, current_year, show_rep
 
 
 class InventoryScreen(MDFloatLayout):
@@ -35,7 +35,7 @@ class InventoryScreen(MDFloatLayout):
 class FinancialScreen(MDFloatLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.display_inc()
+        self.name = 'financial'
 
     show_exp = show_exp
     go_back = go_back
@@ -46,6 +46,7 @@ class FinancialScreen(MDFloatLayout):
     show_inc = show_inc
     current_month = current_month
     current_year = current_year
+    show_rep = show_rep
     
 
 class SalesScreen(MDFloatLayout):
@@ -144,8 +145,13 @@ class DisplayButton(MDButton):
             self.menu = None  
 
         button_text.text = item
+        
 
 class FinancialSection(MDCard, ButtonBehavior):
+    pass
+
+
+class ReportSection(MDCard, ButtonBehavior):
     pass
         
 

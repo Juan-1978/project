@@ -1,6 +1,12 @@
 <FinancialSection>
-    size_hint: None, None
-    size: '300dp', '300dp'
+    size_hint_y: None
+    height: self.width
+    #size: '300dp', '300dp'
+    pos_hint: {'center_y': 0.5}
+
+<ReportSection>
+    size_hint_y: None
+    height: self.width
     pos_hint: {'center_y': 0.5}
 
 <ExpensesRow>
@@ -79,6 +85,15 @@
 
 <FinancialScreen>
     MDBoxLayout:
+        id: financial_screen
+        opacity: 0
+        disabled: True
+        size: root.size
+        pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+        orientation: 'horizontal'
+        spacing: '25dp'
+
+    MDBoxLayout:
         id: financial_box
         size: root.size
         pos_hint: {'center_x': 0.5, 'center_y': 0.55}
@@ -105,10 +120,12 @@
                 bold: True
 
         FinancialSection:
-            id:rep_btn
+            id: rep_btn
+            on_press: root.show_rep()
             MDLabel:
                 text: 'Financial Reports'
                 halign: 'center'
+                bold: True
 
         Widget:
 

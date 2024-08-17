@@ -9,7 +9,7 @@ from kivymd.uix.divider import MDDivider
 from kivy.metrics import dp
 import sqlite3
 import math
-from components import KV_NO_INPUT, KV_NOT_FOUND, KV_EXIST
+from components import KV_NO_INPUT, KV_NOT_FOUND, KV_EXIST, KV_NOT_ENOUGH
 
 def create_table(self):
     conn = sqlite3.connect('database.db')
@@ -60,7 +60,6 @@ def add_item(self):
     price = float(self.ids.item_price.text_input.text) if self.ids.item_price.text_input.text else 0.00
     quantity = int(self.ids.item_qua.text_input.text) if self.ids.item_qua.text_input.text else 0
     on_order = int(self.ids.item_order.text_input.text) if self.ids.item_order.text_input.text else 0
-    on_sales_order = int(self.ids.item_sales.text_input.text) if self.ids.item_sales.text_input.text else 0
     work_in_progress = int(self.ids.item_work.text_input.text) if self.ids.item_work.text_input.text else 0
     sale_price = float(self.ids.item_sale_price.text_input.text) if self.ids.item_sale_price.text_input.text else 0.00
 
@@ -74,11 +73,9 @@ def add_item(self):
     else:
         try:
             if category == 'Finished Goods':
-                c.execute("INSERT INTO inventory (name, category, description, price, work_in_progress, on_sales_order, sale_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    (name, category, description, price, work_in_progress, on_sales_order, sale_price, quantity)
+                c.execute("INSERT INTO inventory (name, category, description, price, work_in_progress, sale_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (name, category, description, price, work_in_progress, sale_price, quantity)
                 )
-                if on_sales_order != 0:
-                    c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name, sale_price, on_sales_order))
             else:
                 c.execute("INSERT INTO inventory (name, category, description, price, on_order, quantity) VALUES (?, ?, ?, ?, ?, ?)",
                     (name, category, description, price, on_order, quantity)
@@ -101,17 +98,17 @@ def add_item(self):
     self.ids.item_price.text_input.text = ''
     self.ids.item_qua.text_input.text = ''
     self.ids.item_order.text_input.text = ''
-    self.ids.item_sales.text_input.text = ''
+    #self.ids.item_sales.text_input.text = ''
     self.ids.item_work.text_input.text = ''
     self.ids.item_sale_price.text_input.text = ''
     card = self.ids.add_item_card
-    goods_sales = self.ids.item_sales
+    #goods_sales = self.ids.item_sales
     goods_work = self.ids.item_work
     goods_price = self.ids.item_sale_price
     submit = self.ids.add_submit
     card.opacity = 0
     goods_price.opacity = 0
-    goods_sales.opacity = 0
+    #goods_sales.opacity = 0
     goods_work.opacity = 0
     submit.opacity = 0
     submit.disabled = True
@@ -122,22 +119,32 @@ def add_item(self):
 def show_add_card(self):
     category = self.ids.add_cat_btn.text
     card = self.ids.add_item_card
-    goods_sales = self.ids.item_sales
+    price = self.ids.item_price
+    on_order = self.ids.item_order
+    #goods_sales = self.ids.item_sales
     goods_work = self.ids.item_work
     goods_price = self.ids.item_sale_price
     submit = self.ids.add_submit
 
     if category == 'Finished Goods':
         card.opacity = 1
+        price.opacity = 0
+        price.disabled = True
+        on_order.opacity = 0
+        on_order.disabled = True
         goods_price.opacity = 1
-        goods_sales.opacity = 1
+        #goods_sales.opacity = 1
         goods_work.opacity = 1
         submit.opacity = 1
         submit.disabled = False
     else:
         card.opacity = 1
+        price.opacity = 1
+        price.disabled = False
+        on_order.opacity = 1
+        on_order.disabled = False
         goods_price.opacity = 0
-        goods_sales.opacity = 0
+        #goods_sales.opacity = 0
         goods_work.opacity = 0
         submit.opacity = 1
         submit.disabled = False
@@ -151,11 +158,11 @@ def close_add_card(self):
     self.ids.item_price.text_input.text = ''
     self.ids.item_qua.text_input.text = ''
     self.ids.item_order.text_input.text = ''
-    self.ids.item_sales.text_input.text = ''
+    #self.ids.item_sales.text_input.text = ''
     self.ids.item_work.text_input.text = ''
     self.ids.item_sale_price.text_input.text = ''
     card.opacity = 0
-
+    
 
 def display_table(self):
     table = self.ids.table_box
@@ -448,7 +455,7 @@ def save_edited_item(self):
     new_work = int(work_text.text) if work_text.text != '' else current_work
     new_sales = int(sales_text.text) if sales_text.text != '' else current_sales
     new_sale_price = float(price_text.text) if price_text.text != '' else current_sale_price
-    new_quantity = int(quantity_text.text) if quantity_text.text != '' else current_quantity
+    new_quantity = current_quantity - new_sales if quantity_text.text == '' else int(quantity_text.text)
     
     if category_text.text == 'Finished Goods':
         update = """
@@ -456,10 +463,14 @@ def save_edited_item(self):
         SET description = ?, work_in_progress = ?, on_sales_order = ?, sale_price = ?, quantity = ?
         WHERE name = ?; 
         """
-        c.execute(update, (new_desc, new_work, new_sales, new_sale_price, new_quantity, name_text.text))
-
-        if sales_text.text != '' and new_sales > 0:
-            c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name_text.text, new_sale_price, new_sales))
+        if new_quantity < 0:
+            card = Builder.load_string(KV_NOT_ENOUGH) 
+            parent_widget = self.parent.parent.parent
+            parent_widget.add_widget(card)
+        else:
+            c.execute(update, (new_desc, new_work, 0, new_sale_price, new_quantity, name_text.text))
+            if sales_text.text != '' and new_sales > 0:
+                c.execute("INSERT INTO incomes (name, sale_price, quantity) VALUES (?, ?, ?)", (name_text.text, new_sale_price, new_sales))
     else:
         update = """
         UPDATE inventory

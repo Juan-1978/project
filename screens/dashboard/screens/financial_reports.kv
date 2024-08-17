@@ -1,0 +1,52 @@
+MDBoxLayout:
+    id: financial_report_box
+    size: root.size
+    pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+    orientation: 'horizontal'
+    spacing: '25dp'
+    padding: '25dp'
+
+    ReportSection:
+        id: inc_st
+        #on_press: root.show_exp()
+        MDLabel:
+            text: 'Profit and Loss Statement'
+            halign: 'center'
+            font_size: '24sp'
+            bold: True
+
+    ReportSection:
+        id: balance_st
+        #on_press: root.show_exp()
+        MDLabel:
+            text: 'Balance Sheet'
+            halign: 'center'
+            font_size: '24sp'
+            bold: True
+
+    ReportSection:
+        id: cash_st
+        #on_press: root.show_exp()
+        MDLabel:
+            text: 'Cash Flow Statement'
+            halign: 'center'
+            font_size: '24sp'
+            bold: True
+
+    ReportSection:
+        id: inventory_st
+        #on_press: root.show_exp()
+        MDLabel:
+            text: 'Inventory Report'
+            halign: 'center'
+            font_size: '24sp'
+            bold: True
+
+    ReportSection:
+        id: budget_st
+        #on_press: root.show_exp()
+        MDLabel:
+            text: 'Budget vs. Actual Report'
+            halign: 'center'
+            font_size: '24sp'
+            bold: True

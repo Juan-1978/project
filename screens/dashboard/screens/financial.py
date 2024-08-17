@@ -2,8 +2,10 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
 from kivy.properties import ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
+from kivy.lang import Builder
 from kivymd.uix.label import MDLabel
 from kivymd.uix.divider import MDDivider
+from kivymd.uix.floatlayout import MDFloatLayout
 import math
 import sqlite3
 from datetime import datetime
@@ -28,6 +30,7 @@ def show_exp(self):
 
 
 def go_back(self):
+    financial_screen = self.ids.financial_screen
     financial_box = self.ids.financial_box
     exp_box = self.ids.exp_box
     inc_box = self.ids.inc_box
@@ -37,6 +40,9 @@ def go_back(self):
 
     financial_box.opacity = 1
     financial_box.disabled = False
+    financial_screen.clear_widgets()
+    financial_screen.opacity = 0
+    financial_screen.disabled = True
     exp_box.opacity = 0
     exp_box.disabled = True
     exp_btn.opacity = 0
@@ -47,6 +53,7 @@ def go_back(self):
     inc_btn.disabled = True
     plus_btn.opacity = 0
     plus_btn.disabled = True
+
 
 
 class SheetGrid(MDGridLayout):
@@ -411,3 +418,20 @@ def current_year(self):
     current = datetime.now().date()
     year = current.year
     return year
+
+
+def show_rep(self):
+    financial_screen = self.ids.financial_screen
+    financial_box = self.ids.financial_box
+    back_btn = self.ids.back_inc_btn
+    
+    financial_screen.opacity = 1
+    financial_screen.disabled = False
+    financial_box.opacity = 0
+    financial_box.disabled = True
+    back_btn.opacity = 1
+    back_btn.disabled = False
+
+    financial_screen.clear_widgets()
+    financial_report = Builder.load_file('screens/dashboard/screens/financial_reports.kv')
+    financial_screen.add_widget(financial_report)
