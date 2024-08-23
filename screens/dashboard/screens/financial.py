@@ -1,14 +1,14 @@
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
-from kivy.properties import ListProperty, NumericProperty, ObjectProperty, StringProperty
+from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivymd.uix.label import MDLabel
 from kivymd.uix.divider import MDDivider
-from kivymd.uix.floatlayout import MDFloatLayout
 import math
 import sqlite3
 from datetime import datetime
+from components import KV_FILLOUT, KV_FORMAT, KV_INCOME_STMT, KV_REP_BOX
 
 
 def show_exp(self):
@@ -30,8 +30,8 @@ def show_exp(self):
 
 
 def go_back(self):
-    financial_screen = self.ids.financial_screen
     financial_box = self.ids.financial_box
+    reports_box = self.ids.reports_box
     exp_box = self.ids.exp_box
     inc_box = self.ids.inc_box
     exp_btn = self.ids.back_btn
@@ -40,9 +40,8 @@ def go_back(self):
 
     financial_box.opacity = 1
     financial_box.disabled = False
-    financial_screen.clear_widgets()
-    financial_screen.opacity = 0
-    financial_screen.disabled = True
+    reports_box.opacity = 0
+    reports_box.disabled = True
     exp_box.opacity = 0
     exp_box.disabled = True
     exp_btn.opacity = 0
@@ -53,7 +52,7 @@ def go_back(self):
     inc_btn.disabled = True
     plus_btn.opacity = 0
     plus_btn.disabled = True
-
+    reports_box.clear_widgets()
 
 
 class SheetGrid(MDGridLayout):
@@ -70,20 +69,24 @@ class SheetGrid(MDGridLayout):
     def update_grid(self):
         self.clear_widgets()
         self.total = 0
+        total = 0
+        for item in self.items:
+            value = item[3] * item[4]
+            total += value
+
+        state = ExpenseState()
+        state.set_current_item(total)
+
         start = self.page * self.items_per_page
         end = start + self.items_per_page
-        total = 0
-        state = ExpenseState()
 
         for item in self.items[start:end]:
             value = item[3] * item[4]
-            total += value
             updated_item = item + (value,)
             for i in updated_item:
                 row = ExpensesRow(text=str(i))
-                self.add_widget(row) 
+                self.add_widget(row)    
             
-        state.set_current_item(total)    
         Clock.schedule_once(self.update_page, 0.1)
 
     def next_page(self):
@@ -197,13 +200,27 @@ def display_exp(self):
            
 def add_exp(self):
     name = self.ids.exp_name.text_input.text
-    quantity = int(self.ids.exp_qua.text_input.text)
-    price = float(self.ids.exp_price.text_input.text)
+    type = self.ids.exp_type.text
+    try:
+        quantity = int(self.ids.exp_qua.text_input.text)
+        price = float(self.ids.exp_price.text_input.text)
+    except ValueError:
+        card = Builder.load_string(KV_FORMAT) 
+        parent_widget = self.parent.parent.parent
+        parent_widget.add_widget(card)
+        return
 
     conn = sqlite3.connect('database.db') 
     c = conn.cursor()
-    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Unforeseen', price, quantity))
-    conn.commit()
+
+    if name == '' or type == 'Select Type':
+        card = Builder.load_string(KV_FILLOUT) 
+        parent_widget = self.parent.parent.parent
+        parent_widget.add_widget(card)
+    else:
+        c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, type, price, quantity))
+        conn.commit()
+    
     conn.close()
 
     self.close_add_exp()
@@ -214,6 +231,7 @@ def close_add_exp(self):
     self.ids.exp_name.text_input.text = ''
     self.ids.exp_qua.text_input.text = ''
     self.ids.exp_price.text_input.text = ''
+    self.ids.exp_type.text = 'Select Type'
 
 
 def show_inc(self):
@@ -342,20 +360,25 @@ class IncomeSheetGrid(MDGridLayout):
     def update_grid(self):
         self.clear_widgets()
         self.total = 0
+        total = 0
+
+        for item in self.items:
+            value = item[2] * item[3]
+            total += value
+
+        state = IncomeState()
+        state.set_current_item(total)
+
         start = self.page * self.items_per_page
         end = start + self.items_per_page
-        total = 0
-        state = IncomeState()
 
         for item in self.items[start:end]:
             value = item[2] * item[3]
-            total += value
             updated_item = item + (value,)
             for i in updated_item:
                 row = ExpensesRow(text=str(i))
                 self.add_widget(row) 
 
-        state.set_current_item(total)
         Clock.schedule_once(self.update_page, 0.1)      
 
     def next_page(self):
@@ -379,59 +402,3 @@ class IncomeSheetGrid(MDGridLayout):
 
     def update_columns(self, num_cols):
         self.cols = num_cols
-
-
-def current_month(self):
-    current = datetime.now().date()
-    month = current.month
-    str_month = ''
-        
-    if month == 1:
-        str_month = 'January'
-    elif month == 2:
-        str_month = 'February'
-    elif month == 3:
-        str_month = 'March'
-    elif month == 4:
-        str_month = 'April'
-    elif month == 5:
-        str_month = 'May'
-    elif month == 6:
-        str_month = 'June'
-    elif month == 7:
-        str_month = 'July'
-    elif month == 8:
-        str_month = 'August'
-    elif month == 9:
-        str_month = 'September'
-    elif month == 10:
-        str_month = 'October'
-    elif month == 11:
-        str_month = 'November'
-    elif month == 12:
-        str_month = 'December'
-
-    return str_month
-    
-
-def current_year(self):
-    current = datetime.now().date()
-    year = current.year
-    return year
-
-
-def show_rep(self):
-    financial_screen = self.ids.financial_screen
-    financial_box = self.ids.financial_box
-    back_btn = self.ids.back_inc_btn
-    
-    financial_screen.opacity = 1
-    financial_screen.disabled = False
-    financial_box.opacity = 0
-    financial_box.disabled = True
-    back_btn.opacity = 1
-    back_btn.disabled = False
-
-    financial_screen.clear_widgets()
-    financial_report = Builder.load_file('screens/dashboard/screens/financial_reports.kv')
-    financial_screen.add_widget(financial_report)

@@ -6,8 +6,16 @@
 #: include screens/dashboard/screens/sales.kv
 #: include screens/dashboard/screens/assets.kv
 #: include screens/dashboard/screens/analytics.kv
+#: include screens/dashboard/screens/income_stmt.kv
+#: include screens/dashboard/screens/balance_stmt.kv
+#: include screens/dashboard/screens/budget_stmt.kv
+#: include screens/dashboard/screens/cash_stmt.kv
+#: include screens/dashboard/screens/inventory_stmt.kv
+
 
 ScreenManager:
+    id: 'screen_manager'
+    
     LoginScreen:
         name: 'login'
 
@@ -16,3 +24,21 @@ ScreenManager:
 
     DashboardScreen:
         name: 'dashboard'
+
+    IncomeReportScreen:
+        name: 'income'
+
+    BalanceReportScreen:
+        name: 'balance'
+
+    BudgetReportScreen:
+        name: 'budget'
+
+    CashReportScreen:
+        name: 'cash'
+
+    InventoryReportScreen:
+        name: 'inventory_rep'
+
+    
+

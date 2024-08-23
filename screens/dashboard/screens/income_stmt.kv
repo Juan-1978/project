@@ -1,0 +1,162 @@
+<IncomeReportMonthButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<IncomeReportYearButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<IncomeReportGrid>:
+    cols: root.cols
+    row_default_height: '45dp'
+    row_force_default: True
+    height: self.minimum_height
+
+<Headline>
+
+<IncomeRow>
+
+<IncomeReportScreen>
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+
+        Widget:
+
+        MDCard:
+            style: 'elevated'
+            size_hint: None, None  
+            width: self.parent.width * 0.9 
+            height: self.parent.height * 0.85
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            padding: [60, 15, 60, 35]
+            spacing: '20dp'
+            orientation: 'vertical'
+            md_bg_color: 'green'
+
+            MDBoxLayout:
+                size_hint: 1, 0.15
+                padding: '35dp'
+                spacing: '10dp'
+                orientation: 'horizontal'
+
+                MDLabel:
+                    text: 'Profit and Loss Statement'
+                    halign: 'center'
+                    valign: 'middle'
+
+                MDLabel:
+                    text: 'Month:'
+                    halign: 'right'
+
+                IncomeReportMonthButton:
+                    id: income_month_stmt
+                    #on_text: root.display_exp()
+                    MDButtonIcon:
+                        icon: 'menu'
+                        style: "standard"
+                        theme_font_size: "Custom"
+                        font_size: "16sp"
+                        radius: [self.height / 2, ]
+                        size_hint: None, None
+                        size: "30dp", "30dp"
+
+                MDLabel:
+                    text: 'Year:'
+                    halign: 'right'
+
+                IncomeReportYearButton:
+                    #on_text: root.display_exp()
+                    MDButtonIcon:
+                        icon: 'menu'
+                        style: "standard"
+                        theme_font_size: "Custom"
+                        font_size: "16sp"
+                        radius: [self.height / 2, ]
+                        size_hint: None, None
+                        size: "30dp", "30dp"
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                MDBoxLayout:
+                    orientation: 'vertical'
+
+                    Headline:
+                        id: income_head_1
+                        text: 'Revenue'
+
+                    IncomeReportGrid:
+                        id: income_box_1
+
+                    MDBoxLayout:
+                        id: income_head_2
+                        size_hint: 1, None
+                        height: '35dp'
+                        md_bg_color: 'lightgray'
+
+                    IncomeReportGrid:
+                        id: income_box_2
+                    
+                    MDBoxLayout:
+                        id: income_head_3
+                        size_hint: 1, None
+                        height: '35dp'
+                        md_bg_color: 'lightgray'
+
+                Widget:
+                    size_hint_x: None
+                    width: '30dp'
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    
+                    MDBoxLayout:
+                        id: income_head_4
+                        size_hint: 1, None
+                        height: '35dp'
+                        md_bg_color: 'lightgray'
+
+                    IncomeReportGrid:
+                        id: income_box_4
+
+                    MDBoxLayout:
+                        id: income_head_5
+                        size_hint: 1, None
+                        height: '35dp'
+                        md_bg_color: 'lightgray'
+
+                    IncomeReportGrid:
+                        id: income_box_5
+
+                    MDBoxLayout:
+                        id: income_head_6
+                        size_hint: 1, None
+                        height: '35dp'
+                        md_bg_color: 'lightgray'
+
+                    IncomeReportGrid:
+                        id: income_box_6
+
+                    MDBoxLayout:
+                        id: income_head_7
+                        size_hint: 1, None
+                        height: '35dp'
+                        md_bg_color: 'lightgray'
+
+        Widget:
+            size_hint: 1, None
+            height: '90dp'
+    
+    MDTopAppBar:
+        size_hint: 1, 0.09
+
+    MDFabButton:
+        icon: 'arrow-left'
+        pos_hint: {'center_x': 0.93, 'center_y': 0.07}
+        on_press: app.on_drawer_press('financial')

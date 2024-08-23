@@ -83,7 +83,7 @@ def add_item(self):
                 if category == 'Component' or category == 'Raw Material':
                     c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Manufacturing', price, quantity + on_order))
                 else:
-                    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Operational', price, quantity + on_order))
+                    c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name, 'Operating', price, quantity + on_order))
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
@@ -486,7 +486,7 @@ def save_edited_item(self):
             if category_text.text == 'Component' or category_text.text == 'Raw Material':
                 c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Manufacturing', exp_price[0], exp_quantity + new_order))
             else:
-                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Operational', exp_price[0], exp_quantity + new_order))
+                c.execute("INSERT INTO expenses (name, type, price, quantity) VALUES (?, ?, ?, ?)", (name_text.text, 'Operating', exp_price[0], exp_quantity + new_order))
             
     conn.commit()
     conn.close()

@@ -175,7 +175,6 @@ MDCard:
 
 KV_NO_INPUT = """
 MDCard:
-    id: empty_input
     size_hint: None, None
     size: "280dp", "180dp"
     pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -198,7 +197,6 @@ MDCard:
 
 KV_NOT_FOUND = """
 MDCard:
-    id: not_found
     size_hint: None, None
     size: "280dp", "180dp"
     pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -221,7 +219,6 @@ MDCard:
 
 KV_EXIST = """
 MDCard:
-    id: not_found
     size_hint: None, None
     size: "280dp", "180dp"
     pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -244,7 +241,6 @@ MDCard:
 
 KV_NOT_ENOUGH = """
 MDCard:
-    id: not_enough
     size_hint: None, None
     size: "280dp", "180dp"
     pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -263,4 +259,165 @@ MDCard:
         size: "48dp", "48dp"
         pos_hint: {"center_x": 0.5}
         on_release: app.remove_card(self)
+"""
+
+KV_FILLOUT = """
+MDCard:
+    size_hint: None, None
+    size: "280dp", "180dp"
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    elevation: 4
+    orientation: 'vertical'
+    padding: '10dp'
+
+    MDLabel:
+        text: 'All fields must be filled out.'
+        theme_text_color: 'Secondary'
+        halign: 'center'
+
+    MDIconButton:
+        icon: 'close'
+        size_hint: None, None
+        size: "48dp", "48dp"
+        pos_hint: {"center_x": 0.5}
+        on_release: app.remove_card(self)
+"""
+
+KV_FORMAT = """
+MDCard:
+    size_hint: None, None
+    size: "280dp", "180dp"
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    elevation: 4
+    orientation: 'vertical'
+    padding: '10dp'
+
+    MDLabel:
+        text: 'All fields must be filled out in a proper format.'
+        theme_text_color: 'Secondary'
+        halign: 'center'
+
+    MDIconButton:
+        icon: 'close'
+        size_hint: None, None
+        size: "48dp", "48dp"
+        pos_hint: {"center_x": 0.5}
+        on_release: app.remove_card(self)
+"""
+
+KV_INCOME_STMT = """
+MDBoxLayout:
+    id: income_head
+    size_hint: 1, 0.15
+    padding: '35dp'
+    spacing: '10dp'
+    orientation: 'horizontal'
+
+    MDLabel:
+        text: 'Profit and Loss Statement'
+        halign: 'center'
+        valign: 'middle'
+
+    MDLabel:
+        text: 'Month:'
+        halign: 'right'
+
+    IncomeMonthButton:
+        id: income_month_stmt
+        MDButtonText:
+            id: income_month_text
+            text: app.current_month()
+            halign: 'left'
+            #on_text: root.display_exp()
+        MDButtonIcon:
+            icon: 'menu'
+            style: "standard"
+            theme_font_size: "Custom"
+            font_size: "16sp"
+            radius: [self.height / 2, ]
+            size_hint: None, None
+            size: "30dp", "30dp"
+
+        MDLabel:
+            text: 'Year:'
+            halign: 'right'
+
+        IncomeYearButton:
+            MDButtonText:
+                id: income_year_stmt
+                text: str(app.current_year())
+                halign: 'left'
+                #on_text: root.display_exp()
+            MDButtonIcon:
+                icon: 'menu'
+                style: "standard"
+                theme_font_size: "Custom"
+                font_size: "16sp"
+                radius: [self.height / 2, ]
+                size_hint: None, None
+                size: "30dp", "30dp"
+"""
+
+KV_REP_BOX = """
+MDFloatLayout:
+    id: financial_report_box
+
+    MDBoxLayout:
+        id: report_sections
+        size: root.size
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        orientation: 'horizontal'
+        spacing: '25dp'
+        padding: '25dp'
+
+        ReportSection:
+            id: inc_stmt
+            on_press: root.stmt()
+            MDLabel:
+                text: 'Profit and Loss Statement'
+                halign: 'center'
+                font_size: '24sp'
+                bold: True
+
+        ReportSection:
+            id: balance_stmt
+            #on_press: root.show_exp()
+            MDLabel:
+                text: 'Balance Sheet'
+                halign: 'center'
+                font_size: '24sp'
+                bold: True
+
+        ReportSection:
+            id: cash_stmt
+            #on_press: root.show_exp()
+            MDLabel:
+                text: 'Cash Flow Statement'
+                halign: 'center'
+                font_size: '24sp'
+                bold: True
+
+        ReportSection:
+            id: inventory_stmt
+            #on_press: root.show_exp()
+            MDLabel:
+                text: 'Inventory Report'
+                halign: 'center'
+                font_size: '24sp'
+                bold: True
+
+        ReportSection:
+            id: budget_stmt
+            #on_press: root.show_exp()
+            MDLabel:
+                text: 'Budget vs. Actual Report'
+                halign: 'center'
+                font_size: '24sp'
+                bold: True
+
+    MDBoxLayout:
+        id: test 
+        opacity: 0
+        disabled: True
+        md_bg_color: 'red'
 """

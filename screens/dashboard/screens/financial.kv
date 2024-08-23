@@ -1,12 +1,6 @@
 <FinancialSection>
     size_hint_y: None
     height: self.width
-    #size: '300dp', '300dp'
-    pos_hint: {'center_y': 0.5}
-
-<ReportSection>
-    size_hint_y: None
-    height: self.width
     pos_hint: {'center_y': 0.5}
 
 <ExpensesRow>
@@ -37,6 +31,19 @@
     size_hint: None, None
     size: dp(135), dp(35)
     radius: [0, 0, 0, 0]
+
+<ReportSectionButton>
+    size_hint_y: None
+    height: self.width
+    pos_hint: {'center_y': 0.5}
+
+<ExpenseTypeButton>
+    size_hint: None, None
+    size: '130dp', '35dp'
+    pos_hint: {'center_y': 0.625}
+    background_normal: ''
+    background_down: ''
+    color: 'black'
 
 <MonthButton>
     style: 'outlined'
@@ -85,13 +92,13 @@
 
 <FinancialScreen>
     MDBoxLayout:
-        id: financial_screen
-        opacity: 0
-        disabled: True
+        id: reports_box
         size: root.size
         pos_hint: {'center_x': 0.5, 'center_y': 0.55}
         orientation: 'horizontal'
         spacing: '25dp'
+        opacity: 0
+        disabled: True
 
     MDBoxLayout:
         id: financial_box
@@ -119,9 +126,10 @@
                 halign: 'center'
                 bold: True
 
-        FinancialSection:
+        ReportSectionButton:
             id: rep_btn
-            on_press: root.show_rep()
+            text: ''
+            on_text: root.show_rep() if self.text else None
             MDLabel:
                 text: 'Financial Reports'
                 halign: 'center'
@@ -180,7 +188,7 @@
                 id: exp_month_input
                 MDButtonText:
                     id: exp_month_btn
-                    text: root.current_month()
+                    text: app.current_month()
                     halign: 'left'
                     on_text: root.display_exp()
                 MDButtonIcon:
@@ -200,7 +208,7 @@
                 id: exp_year_input
                 MDButtonText:
                     id: exp_year_btn
-                    text: str(root.current_year())
+                    text: str(app.current_year())
                     halign: 'left'
                     on_text: root.display_exp()
                 MDButtonIcon:
@@ -307,7 +315,7 @@
             on_close: root.close_add_exp()
 
             MDLabel:
-                text: 'Add an unforeseen expense'
+                text: 'Add an Operating or Unforeseen expense'
 
             MDBoxLayout:
                 id: add_item_card
@@ -315,6 +323,10 @@
                 spacing: '15dp'
             
                 Widget:
+
+                ExpenseTypeButton:
+                    id: exp_type
+                    text: 'Select Type'
 
                 AddExp:
                     id: exp_name
@@ -373,7 +385,7 @@
                 id: month_input
                 MDButtonText:
                     id: month_btn
-                    text: root.current_month()
+                    text: app.current_month()
                     halign: 'left'
                     on_text: root.display_inc()
                 MDButtonIcon:
@@ -393,7 +405,7 @@
                 id: year_input
                 MDButtonText:
                     id: year_btn
-                    text: str(root.current_year())
+                    text: str(app.current_year())
                     halign: 'left'
                     on_text: root.display_inc()
                 MDButtonIcon:
@@ -459,4 +471,4 @@
                 color: 'black'
                 background_normal: ''
                 background_color: financial_box.md_bg_color
-                font_size: '24sp'
+                font_size: '24sp'       

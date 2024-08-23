@@ -1,6 +1,6 @@
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel, MDIcon
+from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.button import MDButton
 from kivymd.uix.card import MDCard
@@ -10,7 +10,8 @@ from kivy.properties import StringProperty
 from kivy.metrics import dp
 import sqlite3
 from screens.dashboard.screens.inventory import create_table, display_table, add_item, load_editing_item, save_edited_item, delete_item, show_add_card, close_add_card, close_edit_card, find_item
-from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, display_inc, show_inc, current_month, current_year, show_rep
+from screens.dashboard.screens.financial import show_exp, go_back, display_exp, add_exp, close_add_exp, display_inc, show_inc
+from screens.dashboard.screens.financial_reports import show_rep
 
 
 class InventoryScreen(MDFloatLayout):
@@ -44,8 +45,6 @@ class FinancialScreen(MDFloatLayout):
     close_add_exp = close_add_exp
     display_inc = display_inc
     show_inc = show_inc
-    current_month = current_month
-    current_year = current_year
     show_rep = show_rep
     
 
@@ -116,6 +115,30 @@ class CategoryButton(Button):
             self.menu = None  
 
 
+class ExpenseTypeButton(Button):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = ["Unforeseen", "Operating"]
+        self.on_release = self.show_menu
+        self.menu = None
+
+    def show_menu(self):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        self.text = item
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
+
 class DisplayButton(MDButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -151,14 +174,36 @@ class FinancialSection(MDCard, ButtonBehavior):
     pass
 
 
-class ReportSection(MDCard, ButtonBehavior):
-    pass
-        
+class ReportSectionButton(MDCard, ButtonBehavior):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.items = ["Income Statement", "Balance Sheet", "Cash Flow Statement", "Inventory Report", "Budget vs. Actual Report"]
+        self.on_release = self.show_menu
+        self.menu = None
+
+    def show_menu(self):
+        if not self.menu:
+            menu_items = [{'text': item, 'on_release': lambda x=item: self.set_item(x)} for item in self.items]
+            self.menu = MDDropdownMenu(
+                caller=self,
+                items=menu_items,
+                width_mult=4
+            )
+        self.menu.open()
+
+    def set_item(self, item):
+        if self.text == item:
+            self.text = ''
+        self.text = item
+        if self.menu:
+            self.menu.dismiss()
+            self.menu = None  
+
 
 class TypeButton(MDButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.items = ["All         ", "Manufacturing", "Operational", "Unforeseen"]
+        self.items = ["All         ", "Manufacturing", "Operating", "Unforeseen"]
         
         self.menu = None
         self.on_release = self.show_menu
@@ -255,7 +300,7 @@ class ExpenseMonthButton(MDButton):
             self.menu = None  
 
         month_btn.text = item
-        
+
 
 class IncomeYearButton(MDButton):
     def __init__(self, **kwargs):
@@ -288,7 +333,7 @@ class IncomeYearButton(MDButton):
 
     def set_item(self, item):
         parent_widget = self.parent.parent.parent
-        year_btn = parent_widget.ids.get('year_btn')
+        year_btn = parent_widget.ids.get('year_btn') 
 
         if self.menu:
             self.menu.dismiss()

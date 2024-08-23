@@ -1,4 +1,5 @@
 from kivy.lang import Builder
+from datetime import datetime
 from components import KV_LOGIN, KV_REGISTER, KV_RESET, KV_TEXT, KV_BOARD, ADD_ONE
 from screens.dashboard.screens.screens import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
 
@@ -65,3 +66,42 @@ def remove_card(self, button_instance):
     parent_layout = card.parent  
     if parent_layout:
         parent_layout.remove_widget(card)
+
+
+def current_month(self):
+    current = datetime.now().date()
+    month = current.month
+    str_month = ''
+        
+    if month == 1:
+        str_month = 'January'
+    elif month == 2:
+        str_month = 'February'
+    elif month == 3:
+        str_month = 'March'
+    elif month == 4:
+        str_month = 'April'
+    elif month == 5:
+        str_month = 'May'
+    elif month == 6:
+        str_month = 'June'
+    elif month == 7:
+        str_month = 'July'
+    elif month == 8:
+        str_month = 'August'
+    elif month == 9:
+        str_month = 'September'
+    elif month == 10:
+        str_month = 'October'
+    elif month == 11:
+        str_month = 'November'
+    elif month == 12:
+        str_month = 'December'
+
+    return str_month
+    
+
+def current_year(self):
+    current = datetime.now().date()
+    year = current.year
+    return year
