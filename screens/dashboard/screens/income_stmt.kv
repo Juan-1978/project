@@ -14,7 +14,19 @@
 
 <IncomeReportGrid>:
     cols: root.cols
-    row_default_height: '45dp'
+    row_default_height: '35dp'
+    row_force_default: True
+    height: self.minimum_height
+
+<CostReportGrid>:
+    cols: root.cols
+    row_default_height: '35dp'
+    row_force_default: True
+    height: self.minimum_height
+
+<OtherReportGrid>:
+    cols: root.cols
+    row_default_height: '35dp'
     row_force_default: True
     height: self.minimum_height
 
@@ -57,7 +69,6 @@
 
                 IncomeReportMonthButton:
                     id: income_month_stmt
-                    #on_text: root.display_exp()
                     MDButtonIcon:
                         icon: 'menu'
                         style: "standard"
@@ -72,7 +83,7 @@
                     halign: 'right'
 
                 IncomeReportYearButton:
-                    #on_text: root.display_exp()
+                    id: income_year_stmt
                     MDButtonIcon:
                         icon: 'menu'
                         style: "standard"
@@ -89,25 +100,18 @@
 
                     Headline:
                         id: income_head_1
-                        text: 'Revenue'
 
                     IncomeReportGrid:
                         id: income_box_1
 
-                    MDBoxLayout:
+                    Headline:
                         id: income_head_2
-                        size_hint: 1, None
-                        height: '35dp'
-                        md_bg_color: 'lightgray'
 
-                    IncomeReportGrid:
+                    CostReportGrid:
                         id: income_box_2
                     
-                    MDBoxLayout:
+                    Headline:
                         id: income_head_3
-                        size_hint: 1, None
-                        height: '35dp'
-                        md_bg_color: 'lightgray'
 
                 Widget:
                     size_hint_x: None
@@ -116,38 +120,23 @@
                 MDBoxLayout:
                     orientation: 'vertical'
                     
-                    MDBoxLayout:
+                    Headline:
                         id: income_head_4
-                        size_hint: 1, None
-                        height: '35dp'
-                        md_bg_color: 'lightgray'
 
-                    IncomeReportGrid:
+                    CostReportGrid:
                         id: income_box_4
 
-                    MDBoxLayout:
+                    Headline:
                         id: income_head_5
-                        size_hint: 1, None
-                        height: '35dp'
-                        md_bg_color: 'lightgray'
 
-                    IncomeReportGrid:
-                        id: income_box_5
-
-                    MDBoxLayout:
+                    Headline:
                         id: income_head_6
-                        size_hint: 1, None
-                        height: '35dp'
-                        md_bg_color: 'lightgray'
 
-                    IncomeReportGrid:
+                    OtherReportGrid:
                         id: income_box_6
 
-                    MDBoxLayout:
+                    Headline:
                         id: income_head_7
-                        size_hint: 1, None
-                        height: '35dp'
-                        md_bg_color: 'lightgray'
 
         Widget:
             size_hint: 1, None

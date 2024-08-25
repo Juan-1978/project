@@ -118,7 +118,7 @@ class CategoryButton(Button):
 class ExpenseTypeButton(Button):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.items = ["Unforeseen", "Operating"]
+        self.items = ["Unforeseen", "Operating", "Marketing", "Salaries", "Shipping"]
         self.on_release = self.show_menu
         self.menu = None
 
@@ -203,7 +203,7 @@ class ReportSectionButton(MDCard, ButtonBehavior):
 class TypeButton(MDButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.items = ["All         ", "Manufacturing", "Operating", "Unforeseen"]
+        self.items = ["All         ", "Manufacturing", "Operating", "Unforeseen", "Marketing", "Salaries", "Shipping"]
         
         self.menu = None
         self.on_release = self.show_menu
