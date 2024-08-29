@@ -8,7 +8,7 @@ from kivymd.uix.divider import MDDivider
 import math
 import sqlite3
 from datetime import datetime
-from components import KV_FILLOUT, KV_FORMAT, KV_INCOME_STMT, KV_REP_BOX
+from components import KV_FILLOUT, KV_FORMAT
 
 
 def show_exp(self):

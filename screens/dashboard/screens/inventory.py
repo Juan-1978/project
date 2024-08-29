@@ -49,6 +49,22 @@ def create_table(self):
         )
     """)
 
+    c.execute("""CREATE TABLE IF NOT EXISTS balance_sheets(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        cash REAL DEFAULT 0.00,
+        receivable REAL DEFAULT 0.00,
+        inventory REAL NOT NULL,
+        equipment REAL NOT NULL,
+        depreciation REAL DEFAULT 0.00,
+        payable REAL DEFAULT 0.00,
+        loans REAL DEFAULT 0.00,
+        capital REAL NOT NULL,
+        retained REAL DEFAULT 0.00,
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 

@@ -11,9 +11,9 @@ from screens.login.login import LoginScreen
 from screens.login.reset import ResetScreen
 from screens.dashboard.dashboard import DashboardScreen 
 from screens.dashboard.screens.screens import InventoryScreen, FinancialScreen, SalesScreen, AssetsScreen, AnalyticsScreen
-from screens.dashboard.screens.financial_reports import IncomeReportScreen
+from screens.dashboard.screens.financial_reports import IncomeReportScreen, BalanceReportScreen
 
-from helpers import on_drawer_press, sign_out, remove_card, current_month, current_year
+from helpers import on_drawer_press, sign_out, remove_card, current_month, current_year, remove_form
 
 Window.clearcolor = (1, 1, 1, 1)
 
@@ -33,6 +33,7 @@ class Entrepreno(MDApp):
     remove_card = remove_card
     current_year = current_year
     current_month = current_month
+    remove_form = remove_form
     
     def on_start(self):
         if self.root:

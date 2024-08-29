@@ -1,3 +1,142 @@
-MDCard:
-    MDLabel:
-        text: "Balance Sheet"
+<BalanceRecordsButton>
+    style: 'outlined'
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: None, None
+    size: dp(135), dp(35)
+    radius: [0, 0, 0, 0]
+
+<BalanceReportGrid>:
+    cols: root.cols
+    row_default_height: '35dp'
+    row_force_default: True
+    height: self.minimum_height
+
+<NonCurrentAssetsGrid>:
+    cols: root.cols
+    row_default_height: '35dp'
+    row_force_default: True
+    height: self.minimum_height
+
+<Headline>
+
+<Subline>
+
+<IncomeRow>
+
+<BalanceInput>
+    text: root.text
+
+<BalanceReportScreen>
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+
+        Widget:
+
+        MDCard:
+            style: 'elevated'
+            size_hint: None, None  
+            width: self.parent.width * 0.9 
+            height: self.parent.height * 0.85
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            padding: [60, 15, 60, 35]
+            spacing: '20dp'
+            orientation: 'vertical'
+            md_bg_color: 'green'
+
+            MDBoxLayout:
+                size_hint: 1, 0.15
+                padding: '35dp'
+                spacing: '10dp'
+                orientation: 'horizontal'
+
+                MDLabel:
+                    text: 'Balance Sheet Overview'
+                    halign: 'center'
+                    valign: 'middle'
+                    bold: 'True'
+
+                MDLabel:
+                    text: 'Records:'
+                    halign: 'right'
+
+                BalanceRecordsButton:
+                    id: balance_name_stmt
+                    MDButtonIcon:
+                        icon: 'menu'
+                        style: "standard"
+                        theme_font_size: "Custom"
+                        font_size: "16sp"
+                        radius: [self.height / 2, ]
+                        size_hint: None, None
+                        size: "30dp", "30dp"
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                MDBoxLayout:
+                    orientation: 'vertical'
+
+                    Headline:
+                        id: balance_head_1
+
+                    Subline:
+                        id: balance_sub_1
+
+                    BalanceReportGrid:
+                        id: balance_box_1
+
+                    #Widget:
+                       #size_hint_x: None
+                        #width: '30dp'
+
+                    Subline:
+                        id: balance_sub_2
+
+                    NonCurrentAssetsGrid:
+                        id: balance_box_2
+
+                    Widget:
+
+                Widget:
+                    size_hint_x: None
+                    width: '30dp'
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    
+                    Headline:
+                        id: balance_head_2
+
+                    BalanceReportGrid:
+                        id: balance_box_3
+
+                    Headline:
+                        id: balance_head_3
+
+                    BalanceReportGrid:
+                        id: balance_box_4
+
+                    Headline:
+                        id: balance_head_4
+
+        Widget:
+            size_hint: 1, None
+            height: '90dp'
+    
+    MDTopAppBar:
+        size_hint: 1, 0.09
+
+    MDFabButton:
+        icon: 'arrow-left'
+        pos_hint: {'center_x': 0.93, 'center_y': 0.07}
+        on_press: app.on_drawer_press('financial')
+
+    MDFabButton:
+        icon: 'plus'
+        pos_hint: {'center_x': 0.88, 'center_y': 0.07}
+        on_press: root.balance_form()
+
+    MDFabButton:
+        icon: 'delete'
+        pos_hint: {'center_x': 0.83, 'center_y': 0.07}
+        on_press: root.delete_balance()

@@ -68,6 +68,13 @@ def remove_card(self, button_instance):
         parent_layout.remove_widget(card)
 
 
+def remove_form(self, button_instance):
+    form = button_instance.parent.parent.parent 
+    parent_layout = form.parent  
+    if parent_layout:
+        parent_layout.remove_widget(form)
+
+
 def current_month(self):
     current = datetime.now().date()
     month = current.month
