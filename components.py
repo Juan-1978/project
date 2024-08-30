@@ -417,7 +417,7 @@ MDCard:
     padding: '10dp'
 
     MDLabel:
-        text: 'Capital must have a valid numeric value.'
+        text: 'Capital must be a valid numeric value.'
         theme_text_color: 'Secondary'
         halign: 'center'
 
@@ -440,6 +440,28 @@ MDCard:
 
     MDLabel:
         text: 'No Balance Sheets recorded yet. Add your first one.'
+        theme_text_color: 'Secondary'
+        halign: 'center'
+
+    MDIconButton:
+        icon: 'close'
+        size_hint: None, None
+        size: "48dp", "48dp"
+        pos_hint: {"center_x": 0.5}
+        on_release: app.remove_card(self)
+"""
+
+KV_NAME_ERROR = """
+MDCard:
+    size_hint: None, None
+    size: "280dp", "180dp"
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    elevation: 4
+    orientation: 'vertical'
+    padding: '10dp'
+
+    MDLabel:
+        text: 'You can only have one balance sheet per month.'
         theme_text_color: 'Secondary'
         halign: 'center'
 

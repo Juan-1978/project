@@ -15,7 +15,7 @@ from kivy.metrics import dp
 import sqlite3
 from kivy.app import App
 from datetime import datetime
-from components import KV_BALANCE, KV_CAPITAL, KV_NO_BALANCE
+from components import KV_BALANCE, KV_CAPITAL, KV_NO_BALANCE, KV_NAME_ERROR
 
 
 def show_rep(self):
@@ -353,7 +353,7 @@ class BalanceReportScreen(Screen):
 
     def balance_form(self):
         card = Builder.load_string(KV_BALANCE) 
-        self.add_widget(card)
+        self.add_widget(card)   
 
         cash_box = card.ids.cash.input
         rec_box = card.ids.receivable.input
@@ -416,20 +416,26 @@ class BalanceReportScreen(Screen):
         for equip in equipment:
             total_equip += (equip[0] * equip[1])
 
+        screen_manager = self.manager
+
         if cap == None:
             cap_card = Builder.load_string(KV_CAPITAL)
-            self.add_widget(cap_card)
+            screen = screen_manager.get_screen('dashboard')
+            screen.add_widget(cap_card)
         else:
-            c.execute("INSERT INTO balance_sheets (name, cash, receivable, inventory, equipment, depreciation, payable, loans, capital, retained) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        (date, cash, rec, total_inv, total_equip, dep, pay, loan, cap, ret)
-            )
-            conn.commit()
+            try:
+                c.execute("INSERT INTO balance_sheets (name, cash, receivable, inventory, equipment, depreciation, payable, loans, capital, retained) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (date, cash, rec, total_inv, total_equip, dep, pay, loan, cap, ret)
+                )
+                conn.commit()
+            except:
+                name_card = Builder.load_string(KV_NAME_ERROR)
+                screen = screen_manager.get_screen('dashboard')
+                screen.add_widget(name_card)
+                print('Something went wrong...')
 
         conn.close()
         self.balance_rep()
-        
-    def delete_balance(self):
-        print("Deleting balance...")
 
 
 class BudgetReportScreen(Screen):
